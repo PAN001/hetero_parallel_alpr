@@ -74,7 +74,7 @@ postprocess_min_confidence = 65
 postprocess_confidence_skip_level = 80
 
 
-debug_general         = 0
+debug_general         = 1
 debug_timing          = 1
 debug_detector        = 1
 debug_prewarp         = 0
