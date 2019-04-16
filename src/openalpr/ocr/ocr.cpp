@@ -33,7 +33,7 @@ namespace alpr
   
   void OCR::performOCR(PipelineData* pipeline_data)
   {
-    
+    std::cout << "========================== OCR::performOCR ==========================" << endl;
     timespec startTime;
     getTimeMonotonic(&startTime);
 
