@@ -73,7 +73,8 @@ namespace alpr
     // TODO：可parallel char加入顺序貌似无所谓
     omp_set_nested(1);
     omp_set_dynamic(0);
-    #pragma omp for schedule(static)
+    // #pragma omp for schedule(static)
+    #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       // Make it black text on white background
@@ -84,10 +85,10 @@ namespace alpr
 
  
       // int absolute_charpos = 0;
-      #pragma omp for schedule(static)
+      // #pragma omp for schedule(static)
       for (unsigned int j = 0; j < pipeline_data->charRegions[line_idx].size(); j++)
       {
-        absolute_charpos = j;
+        int absolute_charpos = j;
         // Trace: iteratre through each segemented char (region): there might be several chars in one region but idealy only one
         Rect expandedRegion = expandRect( pipeline_data->charRegions[line_idx][j], 2, 2, pipeline_data->thresholds[i].cols, pipeline_data->thresholds[i].rows) ;
 
@@ -167,7 +168,6 @@ namespace alpr
 
         // absolute_charpos++;
       }
-      
     }
     
     return recognized_chars;
