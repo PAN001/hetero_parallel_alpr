@@ -5,7 +5,7 @@ int main()
 {
   Pix *image = pixRead("../files/tesseract_test.tiff");
   tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
-  api->Init(NULL, "eng");
+  api->Init("/usr/share/openalpr/runtime_data/ocr/", "eng");
   api->SetImage(image);
   api->Recognize(0);
   tesseract::ResultIterator* ri = api->GetIterator();
