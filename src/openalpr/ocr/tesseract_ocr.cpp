@@ -59,6 +59,8 @@ namespace alpr
   }
   
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
+    timespec startTime;
+    getTimeMonotonic(&startTime);
 
     const int SPACE_CHAR_CODE = 32;
     
@@ -153,6 +155,13 @@ namespace alpr
         absolute_charpos++;
       }
       
+    }
+
+    if (config->debugTiming)
+    {
+      timespec endTime;
+      getTimeMonotonic(&endTime);
+      std::cout << "OCR Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
     }
     
     return recognized_chars;
