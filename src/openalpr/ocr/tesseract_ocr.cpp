@@ -73,7 +73,7 @@ namespace alpr
     // TODO：可parallel char加入顺序貌似无所谓
     omp_set_nested(1);
     omp_set_dynamic(0);
-    #pragma omp for schedule(static)
+    // #pragma omp for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
