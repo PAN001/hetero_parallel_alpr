@@ -102,7 +102,7 @@ namespace alpr
     {
       int thread_id = omp_get_thread_num();
       // int thread_id = 0;
-      // printf("thread_id: %d i:%d \n", thread_id, i);
+      printf("thread_id: %d i:%d \n", thread_id, i);
 
 
       tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
