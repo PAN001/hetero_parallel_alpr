@@ -3,7 +3,7 @@
 
 int main()
 {
-  Pix *image = pixRead("../files/tesseract_test.tif");
+  Pix *image = pixRead("../files/tesseract_test.tiff");
   tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
   api->Init(NULL, "eng");
   api->SetImage(image);
