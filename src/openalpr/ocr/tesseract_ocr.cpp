@@ -37,8 +37,8 @@ namespace alpr
     int i;
     const string MINIMUM_TESSERACT_VERSION = "3.03";
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
-    // for(i = 0;i < 2;i++) {
-        // tesseract::TessBaseAPI tesseract;
+    for(i = 0;i < 2;i++) {
+        tesseract::TessBaseAPI tesseract;
         if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
         {
           std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
@@ -56,8 +56,8 @@ namespace alpr
         tesseract.SetVariable("save_blob_choices", "T");
         tesseract.SetVariable("debug_file", "/dev/null");
         tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
-        // tesseracts[i] = tesseract;
-    // }
+        tesseracts[i] = tesseract;
+    }
   }
 
   TesseractOcr::~TesseractOcr()
@@ -92,7 +92,7 @@ namespace alpr
       printf("thread_id: %d i:%d \n", thread_id, i);
 
 
-      // tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
+      tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
       std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
 
       // Make it black text on white background
