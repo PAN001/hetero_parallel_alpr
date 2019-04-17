@@ -87,7 +87,7 @@ namespace alpr
                           pipeline_data->thresholds[i].size().width, pipeline_data->thresholds[i].size().height, 
                           pipeline_data->thresholds[i].channels(), pipeline_data->thresholds[i].step1());
 
- 
+      std::cout << "DEBUG: 1" << std::endl
       // int absolute_charpos = 0;
       // #pragma omp for schedule(static)
       for (unsigned int j = 0; j < pipeline_data->charRegions[line_idx].size(); j++)
@@ -98,6 +98,8 @@ namespace alpr
 
         tesseract.SetRectangle(expandedRegion.x, expandedRegion.y, expandedRegion.width, expandedRegion.height);
         tesseract.Recognize(NULL); // TODO: recognize
+
+        std::cout << "DEBUG: 2" << std::endl
 
         tesseract::ResultIterator* ri = tesseract.GetIterator();
         tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;
@@ -113,6 +115,7 @@ namespace alpr
           int pointsize = 0;
           const char* fontName = ri->WordFontAttributes(&dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &pointsize, &fontindex);
 
+          std::cout << "DEBUG: 3" << std::endl
           // Ignore NULL pointers, spaces, and characters that are way too small to be valid
           if(symbol != 0 && symbol[0] != SPACE_CHAR_CODE && pointsize >= config->ocrMinFontSize)
           {
