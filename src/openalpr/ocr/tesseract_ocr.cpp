@@ -81,6 +81,7 @@ namespace alpr
 
       for (unsigned int j = 0; j < pipeline_data->charRegions[line_idx].size(); j++)
       {
+        // Trace: iteratre through each segemented char (region): there might be several chars in one region but idealy only one
         Rect expandedRegion = expandRect( pipeline_data->charRegions[line_idx][j], 2, 2, pipeline_data->thresholds[i].cols, pipeline_data->thresholds[i].rows) ;
 
         tesseract.SetRectangle(expandedRegion.x, expandedRegion.y, expandedRegion.width, expandedRegion.height);
@@ -88,6 +89,7 @@ namespace alpr
 
         tesseract::ResultIterator* ri = tesseract.GetIterator();
         tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;
+        int ri_cnt = 0;
         // TODO: parallel around do...while
         do
         {
@@ -109,7 +111,7 @@ namespace alpr
             recognized_chars.push_back(c);
 
             if (this->config->debugOcr)
-              printf("charpos%d line%d: threshold %d:  symbol %s, conf: %f font: %s (index %d) size %dpx", absolute_charpos, line_idx, i, symbol, conf, fontName, fontindex, pointsize);
+              printf("charpos%d line%d: ri_cnt %d: threshold %d:  symbol %s, conf: %f font: %s (index %d) size %dpx", absolute_charpos, line_idx, ri_cnt, i, symbol, conf, fontName, fontindex, pointsize);
 
             bool indent = false;
             tesseract::ChoiceIterator ci(*ri);
@@ -149,6 +151,8 @@ namespace alpr
             printf("---------------------------------------------\n");
 
           delete[] symbol;
+
+          ri_cnt++;
         }
         while((ri->Next(level)));
 
