@@ -84,8 +84,8 @@ namespace alpr
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
-      // int thread_id = omp_get_thread_num();
-      int thread_id = 0;
+      int thread_id = omp_get_thread_num();
+      // int thread_id = 0;
       printf("thread_id: %d i:%d \n", thread_id, i);
 
 
