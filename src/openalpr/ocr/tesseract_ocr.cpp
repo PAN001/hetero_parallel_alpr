@@ -35,8 +35,8 @@ namespace alpr
   : OCR(config)
   {
     // int i;
-    // const string MINIMUM_TESSERACT_VERSION = "3.03";
-    // this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
+    const string MINIMUM_TESSERACT_VERSION = "3.03";
+    this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
     // for(i = 0;i < 2;i++) {
     //     if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
     //     {
