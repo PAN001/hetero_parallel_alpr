@@ -39,23 +39,24 @@ namespace alpr
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
     for(i = 0;i < 2;i++) {
         tesseract::TessBaseAPI tesseract = tesseracts[i];
-      if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-      {
-        std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-        std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
-      }
+        if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+        {
+          std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+          std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+        }
 
-      string TessdataPrefix = config->getTessdataPrefix();
-      if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
-        TessdataPrefix += "tessdata/";    
+        string TessdataPrefix = config->getTessdataPrefix();
+        if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
+          TessdataPrefix += "tessdata/";    
 
-      std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
-      std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
-      // Tesseract requires the prefix directory to be set as an env variable
-      tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-      tesseract.SetVariable("save_blob_choices", "T");
-      tesseract.SetVariable("debug_file", "/dev/null");
-      tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
+        std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
+        std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
+        // Tesseract requires the prefix directory to be set as an env variable
+        tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+        tesseract.SetVariable("save_blob_choices", "T");
+        tesseract.SetVariable("debug_file", "/dev/null");
+        tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
+        tesseracts[i] = tesseract;
     }
   }
 
