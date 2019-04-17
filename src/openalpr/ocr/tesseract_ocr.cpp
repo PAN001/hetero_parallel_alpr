@@ -38,25 +38,23 @@ namespace alpr
     const string MINIMUM_TESSERACT_VERSION = "3.03";
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
     for(i = 0;i < 2;i++) {
-        tesseract::TessBaseAPI tesseract;
-        if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+        if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
         {
           std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-          std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+          std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseracts[i].Version() << endl;
         }
 
         string TessdataPrefix = config->getTessdataPrefix();
-        if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
+        if (cmpVersion(tesseracts[i].Version(), "4.0.0") >= 0)
           TessdataPrefix += "tessdata/";    
 
         std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
         std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
         // Tesseract requires the prefix directory to be set as an env variable
-        tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-        tesseract.SetVariable("save_blob_choices", "T");
-        tesseract.SetVariable("debug_file", "/dev/null");
-        tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
-        tesseracts[i] = tesseract;
+        tesseracts[i].Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+        tesseracts[i].SetVariable("save_blob_choices", "T");
+        tesseracts[i].SetVariable("debug_file", "/dev/null");
+        tesseracts[i].SetPageSegMode(PSM_SINGLE_CHAR);
     }
   }
 
