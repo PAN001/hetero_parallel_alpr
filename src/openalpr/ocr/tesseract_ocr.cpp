@@ -76,7 +76,7 @@ namespace alpr
     // omp_set_dynamic(0);
     omp_set_num_threads(thread_count);
     // #pragma omp num_threads(thread_count)
-    #pragma omp for schedule(static)
+    #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
