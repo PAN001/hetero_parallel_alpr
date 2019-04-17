@@ -161,7 +161,7 @@ namespace alpr
     {
       timespec endTime;
       getTimeMonotonic(&endTime);
-      std::cout << "OCR Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
+      std::cout << "recognize_line Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
     }
     
     return recognized_chars;
