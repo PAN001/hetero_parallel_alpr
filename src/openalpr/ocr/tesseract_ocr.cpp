@@ -89,9 +89,10 @@ namespace alpr
     {
       int thread_id = omp_get_thread_num();
       tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
-      printf("omp_get_thread_num(): %d\n", thread_id);
+      printf("thread_id: %d i:%d \n", thread_id, i);
       // Make it black text on white background
       bitwise_not(pipeline_data->thresholds[i], pipeline_data->thresholds[i]);
+      std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
       tesseract.SetImage((uchar*) pipeline_data->thresholds[i].data, 
                           pipeline_data->thresholds[i].size().width, pipeline_data->thresholds[i].size().height, 
                           pipeline_data->thresholds[i].channels(), pipeline_data->thresholds[i].step1());
