@@ -80,7 +80,7 @@ namespace alpr
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
-      std::cout << "omp_get_thread_num(): " << omp_get_thread_num() << std::endl;
+      printf("omp_get_thread_num(): %d\n", omp_get_thread_num());
       // Make it black text on white background
       bitwise_not(pipeline_data->thresholds[i], pipeline_data->thresholds[i]);
       tesseract.SetImage((uchar*) pipeline_data->thresholds[i].data, 
