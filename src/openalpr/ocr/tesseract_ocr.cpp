@@ -85,7 +85,7 @@ namespace alpr
     #pragma omp parallel for num_threads(thread_count)
     // #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
-    for (unsigned int i = 0; i < pipeline_dat->thresholds.size(); i++)
+    for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       int thread_id = omp_get_thread_num();
       tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
