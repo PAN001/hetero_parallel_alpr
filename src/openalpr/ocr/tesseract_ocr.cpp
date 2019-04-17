@@ -92,8 +92,8 @@ namespace alpr
     std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
     // TODO：可parallel char加入顺序貌似无所谓
     int thread_count = 2;
-    omp_set_nested(1);
-    omp_set_dynamic(0);
+    // omp_set_nested(1);
+    // omp_set_dynamic(0);
     omp_set_num_threads(thread_count);
     // #pragma omp parallel for num_threads(thread_count)
     #pragma omp parallel for schedule(static)
@@ -102,22 +102,22 @@ namespace alpr
     {
       int thread_id = omp_get_thread_num();
       // int thread_id = 0;
-      printf("thread_id: %d i:%d \n", thread_id, i);
+      // printf("thread_id: %d i:%d \n", thread_id, i);
 
 
       tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
-      std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
+      // std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
 
       // Make it black text on white background
       bitwise_not(pipeline_data->thresholds[i], pipeline_data->thresholds[i]);
-      std::cout << thread_id << " " << "DEBUG: 0-1" << std::endl;
+      // std::cout << thread_id << " " << "DEBUG: 0-1" << std::endl;
       tesseract.SetImage((uchar*) pipeline_data->thresholds[i].data, 
                           pipeline_data->thresholds[i].size().width, pipeline_data->thresholds[i].size().height, 
                           pipeline_data->thresholds[i].channels(), pipeline_data->thresholds[i].step1());
 
-      std::cout << thread_id << " " << "DEBUG: 1" << std::endl;
+      // std::cout << thread_id << " " << "DEBUG: 1" << std::endl;
       // int absolute_charpos = 0;
-      #pragma omp parallel for schedule(static)
+      // #pragma omp parallel for schedule(static)
       for (unsigned int j = 0; j < pipeline_data->charRegions[line_idx].size(); j++)
       {
         int absolute_charpos = j;
@@ -125,13 +125,13 @@ namespace alpr
         Rect expandedRegion = expandRect( pipeline_data->charRegions[line_idx][j], 2, 2, pipeline_data->thresholds[i].cols, pipeline_data->thresholds[i].rows) ;
 
         tesseract.SetRectangle(expandedRegion.x, expandedRegion.y, expandedRegion.width, expandedRegion.height);
-        std::cout << thread_id << " " << "DEBUG: 1-1" << std::endl;
+        // std::cout << thread_id << " " << "DEBUG: 1-1" << std::endl;
         tesseract.Recognize(NULL); // TODO: recognize
 
-        std::cout << thread_id << " " << "DEBUG: 2" << std::endl;
+        // std::cout << thread_id << " " << "DEBUG: 2" << std::endl;
 
         tesseract::ResultIterator* ri = tesseract.GetIterator();
-        std::cout << thread_id << " " << "DEBUG: 3" << std::endl;
+        // std::cout << thread_id << " " << "DEBUG: 3" << std::endl;
         tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;
         int ri_cnt = 0;
         // TODO: parallel around do...while
@@ -145,7 +145,7 @@ namespace alpr
           int pointsize = 0;
           const char* fontName = ri->WordFontAttributes(&dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &pointsize, &fontindex);
 
-          std::cout << thread_id << " " << "DEBUG: 4" << std::endl;
+          // std::cout << thread_id << " " << "DEBUG: 4" << std::endl;
           // Ignore NULL pointers, spaces, and characters that are way too small to be valid
           if(symbol != 0 && symbol[0] != SPACE_CHAR_CODE && pointsize >= config->ocrMinFontSize)
           {
