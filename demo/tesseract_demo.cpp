@@ -22,5 +22,5 @@ int main()
     } while (ri->Next(level));
   }
 
-  return 0
+  return 0;
 }
