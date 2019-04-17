@@ -79,7 +79,7 @@ namespace alpr
     int thread_count = 1;
     // omp_set_nested(1);
     // omp_set_dynamic(0);
-    omp_set_num_threads(thread_count);
+    // omp_set_num_threads(thread_count);
     // #pragma omp parallel for num_threads(thread_count)
     // #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
