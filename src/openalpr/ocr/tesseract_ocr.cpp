@@ -159,7 +159,7 @@ namespace alpr
             recognized_chars.push_back(c);
 
             if (this->config->debugOcr)
-              printf("charpos%d line%d: ri_cnt %d: threshold %d:  symbol %s, conf: %f font: %s (index %d) size %dpx", absolute_charpos, line_idx, ri_cnt, i, symbol, conf, fontName, fontindex, pointsize);
+              printf("thread %d: charpos%d line%d: ri_cnt %d: threshold %d:  symbol %s, conf: %f font: %s (index %d) size %dpx", thread_id, absolute_charpos, line_idx, ri_cnt, i, symbol, conf, fontName, fontindex, pointsize);
 
             bool indent = false;
             tesseract::ChoiceIterator ci(*ri);
