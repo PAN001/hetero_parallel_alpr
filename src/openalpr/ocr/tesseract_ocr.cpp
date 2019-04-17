@@ -37,7 +37,7 @@ namespace alpr
     int i;
     const string MINIMUM_TESSERACT_VERSION = "3.03";
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
-    for(i = 0;i < 2;i++) {
+    for(i = 0;i < 3;i++) {
         if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
         {
           std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
@@ -77,7 +77,7 @@ namespace alpr
   TesseractOcr::~TesseractOcr()
   {
     int i;
-    for(i = 0;i < 2;i++) {
+    for(i = 0;i < 3;i++) {
       tesseracts[i].End();
     }
   }
@@ -94,7 +94,7 @@ namespace alpr
     std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
     std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
     // TODO：可parallel char加入顺序貌似无所谓
-    int thread_count = 2;
+    int thread_count = 3;
     // omp_set_nested(1);
     // omp_set_dynamic(0);
     omp_set_num_threads(thread_count);
