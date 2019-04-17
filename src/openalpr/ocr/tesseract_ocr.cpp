@@ -71,9 +71,11 @@ namespace alpr
     std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
     std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
     // TODO：可parallel char加入顺序貌似无所谓
+    int thread_count = 2;
     omp_set_nested(1);
     omp_set_dynamic(0);
-    #pragma omp for schedule(static)
+    omp_set_num_threads(thread_count);
+    #pragma omp for num_threads(thread_count);
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
