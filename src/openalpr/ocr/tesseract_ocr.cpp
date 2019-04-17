@@ -65,6 +65,8 @@ namespace alpr
     std::vector<OcrChar> recognized_chars;
     
     std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
+    // TODO：可parallel char加入顺序貌似无所谓
+    // #pragma omp for schedule(static)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       // Make it black text on white background
@@ -78,6 +80,7 @@ namespace alpr
 
       for (unsigned int j = 0; j < pipeline_data->charRegions[line_idx].size(); j++)
       {
+        std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
         Rect expandedRegion = expandRect( pipeline_data->charRegions[line_idx][j], 2, 2, pipeline_data->thresholds[i].cols, pipeline_data->thresholds[i].rows) ;
 
         tesseract.SetRectangle(expandedRegion.x, expandedRegion.y, expandedRegion.width, expandedRegion.height);
@@ -85,6 +88,7 @@ namespace alpr
 
         tesseract::ResultIterator* ri = tesseract.GetIterator();
         tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;
+        // TODO: parallel around do...while
         do
         {
           const char* symbol = ri->GetUTF8Text(level);
