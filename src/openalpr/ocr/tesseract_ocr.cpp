@@ -34,44 +34,44 @@ namespace alpr
   TesseractOcr::TesseractOcr(Config* config)
   : OCR(config)
   {
-    // int i;
+    int i;
     const string MINIMUM_TESSERACT_VERSION = "3.03";
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
-    // for(i = 0;i < 2;i++) {
-    //     if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-    //     {
-    //       std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-    //       std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseracts[i].Version() << endl;
-    //     }
+    for(i = 0;i < 2;i++) {
+        if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+        {
+          std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+          std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseracts[i].Version() << endl;
+        }
 
-    //     string TessdataPrefix = config->getTessdataPrefix();
-    //     if (cmpVersion(tesseracts[i].Version(), "4.0.0") >= 0)
-    //       TessdataPrefix += "tessdata/";    
+        string TessdataPrefix = config->getTessdataPrefix();
+        if (cmpVersion(tesseracts[i].Version(), "4.0.0") >= 0)
+          TessdataPrefix += "tessdata/";    
 
-    //     std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
-    //     std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
-    //     // Tesseract requires the prefix directory to be set as an env variable
-    //     tesseracts[i].Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-    //     tesseracts[i].SetVariable("save_blob_choices", "T");
-    //     tesseracts[i].SetVariable("debug_file", "/dev/null");
-    //     tesseracts[i].SetPageSegMode(PSM_SINGLE_CHAR);
-    // }
-
-    if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-    {
-      std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-      std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+        std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
+        std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
+        // Tesseract requires the prefix directory to be set as an env variable
+        tesseracts[i].Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+        tesseracts[i].SetVariable("save_blob_choices", "T");
+        tesseracts[i].SetVariable("debug_file", "/dev/null");
+        tesseracts[i].SetPageSegMode(PSM_SINGLE_CHAR);
     }
 
-    string TessdataPrefix = config->getTessdataPrefix();
-    if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
-      TessdataPrefix += "tessdata/";    
+    // if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+    // {
+    //   std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+    //   std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+    // }
 
-    // Tesseract requires the prefix directory to be set as an env variable
-    tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-    tesseract.SetVariable("save_blob_choices", "T");
-    tesseract.SetVariable("debug_file", "/dev/null");
-    tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
+    // string TessdataPrefix = config->getTessdataPrefix();
+    // if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
+    //   TessdataPrefix += "tessdata/";    
+
+    // // Tesseract requires the prefix directory to be set as an env variable
+    // tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+    // tesseract.SetVariable("save_blob_choices", "T");
+    // tesseract.SetVariable("debug_file", "/dev/null");
+    // tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
   }
 
   TesseractOcr::~TesseractOcr()
@@ -92,8 +92,8 @@ namespace alpr
     std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
     // TODO：可parallel char加入顺序貌似无所谓
     int thread_count = 2;
-    // omp_set_nested(1);
-    // omp_set_dynamic(0);
+    omp_set_nested(1);
+    omp_set_dynamic(0);
     omp_set_num_threads(thread_count);
     // #pragma omp parallel for num_threads(thread_count)
     #pragma omp parallel for schedule(static)
@@ -105,7 +105,7 @@ namespace alpr
       printf("thread_id: %d i:%d \n", thread_id, i);
 
 
-      // tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
+      tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
       std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
 
       // Make it black text on white background
