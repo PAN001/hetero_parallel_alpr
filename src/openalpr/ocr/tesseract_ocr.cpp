@@ -90,7 +90,7 @@ namespace alpr
       printf("thread_id: %d i:%d \n", thread_id, i);
 
 
-      tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
+      tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
       std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
 
       // Make it black text on white background
