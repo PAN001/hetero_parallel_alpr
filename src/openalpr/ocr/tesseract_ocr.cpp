@@ -34,27 +34,29 @@ namespace alpr
   TesseractOcr::TesseractOcr(Config* config)
   : OCR(config)
   {
+    int i;
     const string MINIMUM_TESSERACT_VERSION = "3.03";
-
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
-    
-    if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-    {
-      std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-      std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+    for(i = 0;i < 2;i++) {
+        tesseract::TessBaseAPI tesseract = tesseracts[i];
+      if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+      {
+        std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+        std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+      }
+
+      string TessdataPrefix = config->getTessdataPrefix();
+      if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
+        TessdataPrefix += "tessdata/";    
+
+      std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
+      std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
+      // Tesseract requires the prefix directory to be set as an env variable
+      tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+      tesseract.SetVariable("save_blob_choices", "T");
+      tesseract.SetVariable("debug_file", "/dev/null");
+      tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
     }
-
-    string TessdataPrefix = config->getTessdataPrefix();
-    if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
-      TessdataPrefix += "tessdata/";    
-
-    std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
-    std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
-    // Tesseract requires the prefix directory to be set as an env variable
-    tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str() 	);
-    tesseract.SetVariable("save_blob_choices", "T");
-    tesseract.SetVariable("debug_file", "/dev/null");
-    tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
   }
 
   TesseractOcr::~TesseractOcr()
@@ -80,7 +82,9 @@ namespace alpr
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
-      printf("omp_get_thread_num(): %d\n", omp_get_thread_num());
+      int thread_id = omp_get_thread_num();
+      tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
+      printf("omp_get_thread_num(): %d\n", thread_id);
       // Make it black text on white background
       bitwise_not(pipeline_data->thresholds[i], pipeline_data->thresholds[i]);
       tesseract.SetImage((uchar*) pipeline_data->thresholds[i].data, 
