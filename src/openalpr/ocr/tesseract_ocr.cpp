@@ -61,7 +61,11 @@ namespace alpr
 
   TesseractOcr::~TesseractOcr()
   {
-    tesseract.End();
+    int i;
+    for(i = 0;i < 2;i++) {
+      tesseract::TessBaseAPI tesseract = tesseracts[i];
+      tesseract.End();
+    }
   }
   
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
