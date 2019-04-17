@@ -59,12 +59,13 @@ namespace alpr
   }
   
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
-
+    std::cout << "========================== TesseractOcr::recognize_line: line_idx = " << line_idx << " ==========================" << std::endl;
     const int SPACE_CHAR_CODE = 32;
     
     std::vector<OcrChar> recognized_chars;
     
     std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
+    std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
     // TODO：可parallel char加入顺序貌似无所谓
     // #pragma omp for schedule(static)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
@@ -80,7 +81,6 @@ namespace alpr
 
       for (unsigned int j = 0; j < pipeline_data->charRegions[line_idx].size(); j++)
       {
-        std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
         Rect expandedRegion = expandRect( pipeline_data->charRegions[line_idx][j], 2, 2, pipeline_data->thresholds[i].cols, pipeline_data->thresholds[i].rows) ;
 
         tesseract.SetRectangle(expandedRegion.x, expandedRegion.y, expandedRegion.width, expandedRegion.height);
