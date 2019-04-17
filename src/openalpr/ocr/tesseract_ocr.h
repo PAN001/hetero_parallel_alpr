@@ -52,7 +52,7 @@ namespace alpr
       void segment(PipelineData* pipeline_data);
     
       tesseract::TessBaseAPI tesseracts[2];
-      // tesseract::TessBaseAPI tesseract;
+      tesseract::TessBaseAPI tesseract;
   };
 
 }
