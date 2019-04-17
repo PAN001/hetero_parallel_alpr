@@ -60,11 +60,10 @@ namespace alpr
 
   TesseractOcr::~TesseractOcr()
   {
-    // int i;
-    // for(i = 0;i < 1;i++) {
-    //   tesseract::TessBaseAPI tesseract = tesseracts[i];
-    //   tesseract.End();
-    // }
+    int i;
+    for(i = 0;i < 1;i++) {
+      tesseracts[i].End();
+    }
   }
   
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
@@ -79,8 +78,8 @@ namespace alpr
     int thread_count = 1;
     // omp_set_nested(1);
     // omp_set_dynamic(0);
-    // omp_set_num_threads(thread_count);
-    // #pragma omp parallel for num_threads(thread_count)
+    omp_set_num_threads(thread_count);
+    #pragma omp parallel for num_threads(thread_count)
     // #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
