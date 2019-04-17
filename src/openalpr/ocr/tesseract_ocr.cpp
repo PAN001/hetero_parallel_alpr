@@ -47,7 +47,7 @@ namespace alpr
       TessdataPrefix += "tessdata/";    
 
     std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
-
+    std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
     // Tesseract requires the prefix directory to be set as an env variable
     tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str() 	);
     tesseract.SetVariable("save_blob_choices", "T");
