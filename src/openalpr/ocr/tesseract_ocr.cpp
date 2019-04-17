@@ -88,8 +88,10 @@ namespace alpr
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       int thread_id = omp_get_thread_num();
-      tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
       printf("thread_id: %d i:%d \n", thread_id, i);
+      
+      tesseract::TessBaseAPI tesseract = tesseracts[thread_id];
+      
       // Make it black text on white background
       bitwise_not(pipeline_data->thresholds[i], pipeline_data->thresholds[i]);
       std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
