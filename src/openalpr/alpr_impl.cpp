@@ -216,7 +216,7 @@ namespace alpr
     return response;
   }
 
-  // TODO: Step 0-2: recognize
+  // Trace: Step 0-2: recognize
   AlprFullDetails AlprImpl::analyzeSingleCountry(cv::Mat colorImg, cv::Mat grayImg, std::vector<cv::Rect> warpedRegionsOfInterest)
   {
     std::cout << "========================== AlprImpl::analyzeSingleCountry ==========================" << endl;
