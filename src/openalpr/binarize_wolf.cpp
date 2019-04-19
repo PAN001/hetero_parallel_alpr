@@ -110,6 +110,10 @@ namespace alpr
     // The threshold T for the center pixel of the window is computed using the mean m and the variance s of the gray values in the window:
     // T = m + k · s, where k is a constant set to −0.2.
     void NiblackSauvolaWolfJolion (Mat im, Mat im_sum, Mat im_sum_sq, double min_I, double max_I, Mat output, NiblackVersion version,
+        std::cout << "========================== NiblackSauvolaWolfJolion ==========================" << std::endl;
+        timespec startTime;
+        getTimeMonotonic(&startTime);
+
         int winx, int winy, double k, double dR) {
 
         double m, s, max_s;
@@ -223,5 +227,9 @@ namespace alpr
                 }
             }
         }
+
+        timespec endTime;
+        getTimeMonotonic(&endTime);
+        cout << "NiblackSauvolaWolfJolion Time: " << diffclock(startTime, endTime) << "ms." << endl;
     }
 }
