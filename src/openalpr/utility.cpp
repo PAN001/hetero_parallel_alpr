@@ -136,6 +136,8 @@ namespace alpr
     int i = 0;
     #pragma omp parallel for schedule(static)
     for (int j=0; j < THRESHOLD_COUNT; j++) {
+      int thread_id = omp_get_thread_num();
+      cout << "thread_id: " << thread_id << endl;
       if (j == 1) {
         int k = 0, win=18;
         NiblackSauvolaWolfJolion(img_gray, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));

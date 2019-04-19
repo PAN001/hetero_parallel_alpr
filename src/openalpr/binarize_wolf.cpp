@@ -48,7 +48,7 @@ namespace alpr
         getTimeMonotonic(&startTime);
 
         Mat im_sum, im_sum_sq;
-        cv::integral(im,im_sum,im_sum_sq,CV_64F);
+        cv::integral(im,im_sum,im_sum_sq,CV_64F); // TODO: no need to calculated this everytime
 
         timespec endTime;
         getTimeMonotonic(&endTime);
