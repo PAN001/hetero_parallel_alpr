@@ -226,7 +226,8 @@ namespace alpr
     for(unsigned int i = 0;i < config->thread_cnt;i++) {
       std::vector<OcrChar> cur_recognized_chars = recognized_chars_thread[i];
 
-       recognized_chars.insert(recognized_chars.end(), cur_recognized_chars.begin(), cur_recognized_chars.end());
+      if(!cur_recognized_chars.empty())
+        recognized_chars.insert(recognized_chars.end(), cur_recognized_chars.begin(), cur_recognized_chars.end());
     }
     
     if (config->debugTiming)

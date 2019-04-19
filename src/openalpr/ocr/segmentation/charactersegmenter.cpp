@@ -90,11 +90,14 @@ namespace alpr
       timespec startTime;
       getTimeMonotonic(&startTime);
 
-      // vector<Mat> allHistograms;
+      vector<Mat> allHistograms;
 
       vector<Rect> lineBoxes;
+      vector<Rect> lineBoxes_thread[config->thread_cnt];
+      #pragma omp parallel for schedule(static)
       for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
       {
+        int thread_id = omp_get_thread_num();
         Mat histogramMask = Mat::zeros(pipeline_data->thresholds[i].size(), CV_8U);
 
         fillConvexPoly(histogramMask, pipeline_data->textLines[lineidx].linePolygon.data(), pipeline_data->textLines[lineidx].linePolygon.size(), Scalar(255,255,255));
@@ -104,9 +107,18 @@ namespace alpr
         float score = 0;
         vector<Rect> charBoxes = getHistogramBoxes(vertHistogram, avgCharWidth, avgCharHeight, &score);
 
-        for (unsigned int z = 0; z < charBoxes.size(); z++)
-          lineBoxes.push_back(charBoxes[z]);
+        for (unsigned int z = 0; z < charBoxes.size(); z++) {
+          // lineBoxes.push_back(charBoxes[z]);
+          lineBoxes_thread[thread_id].push_back(charBoxes[z]);
+        }
         //drawAndWait(&histogramMask);
+      }
+
+      // combine local lineBoxes
+      for(unsigned int i = 0;i < config->thread_cnt;i++) {
+        vector<Rect> cur_lineBoxes = lineBoxes_thread[i];
+        if(!cur_lineBoxes.empty())
+          lineBoxes.insert(lineBoxes.end(), cur_lineBoxes.begin(), cur_lineBoxes.end());
       }
 
 
