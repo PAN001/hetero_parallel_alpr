@@ -38,51 +38,53 @@ namespace alpr
     const string MINIMUM_TESSERACT_VERSION = "3.03";
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
 
-    // for(i = 0;i < 3;i++) {
-    //     if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-    //     {
-    //       std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-    //       std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseracts[i].Version() << endl;
-    //     }
+    // parallel
+    for(i = 0;i < 4;i++) {
+        if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+        {
+          std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+          std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseracts[i].Version() << endl;
+        }
 
-    //     string TessdataPrefix = config->getTessdataPrefix();
-    //     if (cmpVersion(tesseracts[i].Version(), "4.0.0") >= 0)
-    //       TessdataPrefix += "tessdata/";    
+        string TessdataPrefix = config->getTessdataPrefix();
+        if (cmpVersion(tesseracts[i].Version(), "4.0.0") >= 0)
+          TessdataPrefix += "tessdata/";    
 
-    //     std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
-    //     std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
-    //     // Tesseract requires the prefix directory to be set as an env variable
-    //     tesseracts[i].Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-    //     tesseracts[i].SetVariable("save_blob_choices", "T");
-    //     tesseracts[i].SetVariable("debug_file", "/dev/null");
-    //     tesseracts[i].SetPageSegMode(PSM_SINGLE_CHAR);
-    // }
-
-    if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-    {
-      std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-      std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+        std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
+        std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
+        // Tesseract requires the prefix directory to be set as an env variable
+        tesseracts[i].Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+        tesseracts[i].SetVariable("save_blob_choices", "T");
+        tesseracts[i].SetVariable("debug_file", "/dev/null");
+        tesseracts[i].SetPageSegMode(PSM_SINGLE_CHAR);
     }
 
-    string TessdataPrefix = config->getTessdataPrefix();
-    if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
-      TessdataPrefix += "tessdata/";    
+    // // serialized
+    // if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+    // {
+    //   std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+    //   std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+    // }
 
-    // Tesseract requires the prefix directory to be set as an env variable
-    tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-    tesseract.SetVariable("save_blob_choices", "T");
-    tesseract.SetVariable("debug_file", "/dev/null");
-    tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
+    // string TessdataPrefix = config->getTessdataPrefix();
+    // if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
+    //   TessdataPrefix += "tessdata/";    
+
+    // // Tesseract requires the prefix directory to be set as an env variable
+    // tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+    // tesseract.SetVariable("save_blob_choices", "T");
+    // tesseract.SetVariable("debug_file", "/dev/null");
+    // tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
   }
 
   TesseractOcr::~TesseractOcr()
   {
-    // int i;
-    // for(i = 0;i < 3;i++) {
-    //   tesseracts[i].End();
-    // }
+    int i;
+    for(i = 0;i < 4;i++) {
+      tesseracts[i].End();
+    }
 
-    tesseract.End();
+    // tesseract.End();
   }
   
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
@@ -91,18 +93,19 @@ namespace alpr
 
     std::cout << "========================== TesseractOcr::recognize_line: line_idx = " << line_idx << " ==========================" << std::endl;
     const int SPACE_CHAR_CODE = 32;
-    
-    std::vector<OcrChar> recognized_chars;
+    int thread_count = 4;
+    // std::vector<OcrChar> recognized_chars;
+    std::vector<OcrChar> recognized_chars_thread[thread_count];
     
     std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
     std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
     // TODO：可parallel char加入顺序貌似无所谓
-    // int thread_count = 3;
+    
     // omp_set_nested(1);
     // omp_set_dynamic(0);
     // omp_set_num_threads(thread_count);
     // #pragma omp parallel for num_threads(thread_count)
-    // #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
@@ -111,7 +114,7 @@ namespace alpr
       // printf("thread_id: %d i:%d \n", thread_id, i);
 
 
-      // tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
+      tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
       // std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
 
       // Make it black text on white background
@@ -159,7 +162,11 @@ namespace alpr
             c.char_index = absolute_charpos;
             c.confidence = conf;
             c.letter = string(symbol);
-            recognized_chars.push_back(c);
+
+            // TODO: vector push_back is not thread safe
+            // recognized_chars.push_back(c);
+            recognized_chars_thread[thread_id].push_back(c);
+            
 
             if (this->config->debugOcr)
               printf("thread %d: charpos%d line%d: ri_cnt %d: threshold %d:  symbol %s, conf: %f font: %s (index %d) size %dpx", thread_id, absolute_charpos, line_idx, ri_cnt, i, symbol, conf, fontName, fontindex, pointsize);
@@ -176,14 +183,17 @@ namespace alpr
               c2.letter = string(choice);
               
               //1/17/2016 adt adding check to avoid double adding same character if ci is same as symbol. Otherwise first choice from ResultsIterator will get added twice when choiceIterator run.
-              if (string(symbol) != string(choice))
-                recognized_chars.push_back(c2);
+              if (string(symbol) != string(choice)) {
+                // recognized_chars.push_back(c2);
+                recognized_chars_thread[thread_id].push_back(c);
+              }
               else
               {
                 // Explictly double-adding the first character.  This leads to higher accuracy right now, likely because other sections of code
                 // have expected it and compensated. 
                 // TODO: Figure out how to remove this double-counting of the first letter without impacting accuracy
-                recognized_chars.push_back(c2);
+                // recognized_chars.push_back(c2);
+                recognized_chars_thread[thread_id].push_back(c);
               }
               if (this->config->debugOcr)
               {
@@ -211,6 +221,13 @@ namespace alpr
 
         // absolute_charpos++;
       }
+    }
+
+    // combine local recognized_chars
+    for(unsigned int i = 0;i < thread_count;i++) {
+      std::vector<OcrChar> cur_recognized_chars = recognized_chars_thread[i];
+
+       recognized_chars.insert(recognized_chars.end(), cur_recognized_chars.begin(), cur_recognized_chars.end());
     }
     
     if (config->debugTiming)
