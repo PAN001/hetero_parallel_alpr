@@ -137,7 +137,7 @@ namespace alpr
     integral(img_gray, im_sum, im_sum_sq, CV_64F);
 
     double min_I, max_I;
-    minMaxLoc(im, &min_I, &max_I);
+    minMaxLoc(img_gray, &min_I, &max_I);
 
     int i = 0; // TODO: what's this used for?
     #pragma omp parallel for schedule(static)
