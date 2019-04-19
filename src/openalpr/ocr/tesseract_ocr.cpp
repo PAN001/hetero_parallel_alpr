@@ -229,6 +229,13 @@ namespace alpr
       if(!cur_recognized_chars.empty())
         recognized_chars.insert(recognized_chars.end(), cur_recognized_chars.begin(), cur_recognized_chars.end());
     }
+
+    if (config->debugTiming)
+    {
+      timespec endTime;
+      getTimeMonotonic(&endTime);
+      std::cout << "recognize_line Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
+    }
     
     if (config->debugTiming)
     {
