@@ -94,7 +94,7 @@ namespace alpr
     std::cout << "========================== TesseractOcr::recognize_line: line_idx = " << line_idx << " ==========================" << std::endl;
     const int SPACE_CHAR_CODE = 32;
     int thread_count = 4;
-    // std::vector<OcrChar> recognized_chars;
+    std::vector<OcrChar> recognized_chars;
     std::vector<OcrChar> recognized_chars_thread[thread_count];
     
     std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
