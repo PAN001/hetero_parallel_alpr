@@ -727,7 +727,8 @@ namespace alpr
 
     for (unsigned int i = 0; i < thresholds.size(); i++)
     {
-      #pragma omp parallel for schedule(static)
+      // Prallel has good performance
+      // #pragma omp parallel for schedule(static)
       for (unsigned int j = 0; j < charRegions.size(); j++)
       {
         //float minArea = charRegions[j].area() * MIN_AREA_PERCENT;
