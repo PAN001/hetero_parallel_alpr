@@ -183,6 +183,7 @@ namespace alpr
     }
     
     // Apply the edge mask (left and right ends) after all lines have been processed.
+    #pragma omp parallel for schedule(static)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       bitwise_and(pipeline_data->thresholds[i], edge_filter_mask, pipeline_data->thresholds[i]);
@@ -542,12 +543,18 @@ namespace alpr
 
   void CharacterSegmenter::cleanCharRegions(vector<Mat> thresholds, vector<Rect> charRegions)
   {
+    std::cout << "========================== CharacterSegmenter::cleanCharRegions ==========================" << std::endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+
     const float MIN_SPECKLE_HEIGHT_PERCENT = 0.13;
     const float MIN_SPECKLE_WIDTH_PX = 3;
     const float MIN_CONTOUR_AREA_PERCENT = 0.1;
     const float MIN_CONTOUR_HEIGHT_PERCENT = config->segmentationMinCharHeightPercent;
 
     Mat mask = getCharBoxMask(thresholds[0], charRegions);
+
+    cout << "charRegions.size(): " << charRegions.size() << endl;
 
     for (unsigned int i = 0; i < thresholds.size(); i++)
     {
@@ -556,13 +563,6 @@ namespace alpr
 
       Mat tempImg(thresholds[i].size(), thresholds[i].type());
       thresholds[i].copyTo(tempImg);
-
-      //Mat element = getStructuringElement( 1,
-  //				    Size( 2 + 1, 2+1 ),
-  //				    Point( 1, 1 ) );
-      //dilate(thresholds[i], tempImg, element);
-      //morphologyEx(thresholds[i], tempImg, MORPH_CLOSE, element);
-      //drawAndWait(&tempImg);
 
       findContours(tempImg, contours, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
@@ -652,6 +652,10 @@ namespace alpr
         line(thresholds[i], Point(charRegions[j].x + charRegions[j].width + 1, charRegions[j].y), Point(charRegions[j].x + charRegions[j].width + 1, charRegions[j].y + charRegions[j].height), Scalar(0, 0, 0));
       }
     }
+
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- cleanCharRegions Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
   }
 
   void CharacterSegmenter::cleanBasedOnColor(vector<Mat> thresholds, Mat colorMask, vector<Rect> charRegions)
