@@ -39,7 +39,7 @@ namespace alpr
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
 
     // parallel
-    for(i = 0;i < 4;i++) {
+    for(i = 0;i < config->thread_cnt;i++) {
         if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
         {
           std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
@@ -80,7 +80,7 @@ namespace alpr
   TesseractOcr::~TesseractOcr()
   {
     int i;
-    for(i = 0;i < 4;i++) {
+    for(i = 0;i < config->thread_cnt;i++) {
       tesseracts[i].End();
     }
 
@@ -93,9 +93,8 @@ namespace alpr
 
     std::cout << "========================== TesseractOcr::recognize_line: line_idx = " << line_idx << " ==========================" << std::endl;
     const int SPACE_CHAR_CODE = 32;
-    int thread_count = 4;
     std::vector<OcrChar> recognized_chars;
-    std::vector<OcrChar> recognized_chars_thread[thread_count];
+    std::vector<OcrChar> recognized_chars_thread[config->thread_cnt];
     
     std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
     std::cout << "========================== pipeline_data->charRegions[line_idx].size(): " << pipeline_data->charRegions[line_idx].size() << " ==========================" << std::endl;
@@ -103,8 +102,8 @@ namespace alpr
     
     // omp_set_nested(1);
     // omp_set_dynamic(0);
-    // omp_set_num_threads(thread_count);
-    // #pragma omp parallel for num_threads(thread_count)
+    // omp_set_num_threads(config->thread_cnt);
+    // #pragma omp parallel for num_threads(config->thread_cnt)
     #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
@@ -224,7 +223,7 @@ namespace alpr
     }
 
     // combine local recognized_chars
-    for(unsigned int i = 0;i < thread_count;i++) {
+    for(unsigned int i = 0;i < config->thread_cnt;i++) {
       std::vector<OcrChar> cur_recognized_chars = recognized_chars_thread[i];
 
        recognized_chars.insert(recognized_chars.end(), cur_recognized_chars.begin(), cur_recognized_chars.end());

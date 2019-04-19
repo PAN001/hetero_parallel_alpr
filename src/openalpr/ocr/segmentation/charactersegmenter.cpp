@@ -90,7 +90,7 @@ namespace alpr
       timespec startTime;
       getTimeMonotonic(&startTime);
 
-      vector<Mat> allHistograms;
+      // vector<Mat> allHistograms;
 
       vector<Rect> lineBoxes;
       for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
