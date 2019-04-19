@@ -109,12 +109,12 @@ namespace alpr
     // Niblack’s algorithm calculates a threshold sur- face by gliding a rectangular window across the image. 
     // The threshold T for the center pixel of the window is computed using the mean m and the variance s of the gray values in the window:
     // T = m + k · s, where k is a constant set to −0.2.
-    void NiblackSauvolaWolfJolion (Mat im, Mat im_sum, Mat im_sum_sq, Mat output, NiblackVersion version,
+    void NiblackSauvolaWolfJolion (Mat im, Mat im_sum, Mat im_sum_sq, double min_I, double max_I, Mat output, NiblackVersion version,
         int winx, int winy, double k, double dR) {
 
         double m, s, max_s;
         double th=0;
-        double min_I, max_I;
+        // double min_I, max_I;
         int wxh = winx/2;
         int wyh = winy/2;
         int x_firstth= wxh;
@@ -128,7 +128,7 @@ namespace alpr
         Mat map_s = Mat::zeros (im.rows, im.cols, CV_32F); // variance of the gray values in the window
         max_s = calcLocalStats (im, im_sum, im_sum_sq, map_m, map_s, winx, winy);
         
-        minMaxLoc(im, &min_I, &max_I);
+        // minMaxLoc(im, &min_I, &max_I);
                 
         Mat thsurf (im.rows, im.cols, CV_32F);
                 
