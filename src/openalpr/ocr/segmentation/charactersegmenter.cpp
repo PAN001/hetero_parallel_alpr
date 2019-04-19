@@ -18,8 +18,9 @@
 */
 
 #include <opencv2/core/core.hpp>
-
+#include <omp.h>
 #include "charactersegmenter.h"
+
 
 using namespace cv;
 using namespace std;
