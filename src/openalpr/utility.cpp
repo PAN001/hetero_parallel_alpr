@@ -134,65 +134,68 @@ namespace alpr
       thresholds.push_back(Mat(img_gray.size(), CV_8U));
 
     int i = 0;
-    #pragma omp parallel for schedule(static)
-    for (int j=0; j < THRESHOLD_COUNT; j++) {
-      if (j == 1) {
-        int k = 0, win=18;
-        NiblackSauvolaWolfJolion(img_gray, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-        bitwise_not(thresholds[j], thresholds[j]);
-      } else if (j == 2) {
-         int k = 1;
-         int win = 22;
-         NiblackSauvolaWolfJolion(img_gray, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-         bitwise_not(thresholds[j], thresholds[j]);
-      } else if (j == 3) {
-        int k = 1;
-        NiblackSauvolaWolfJolion(img_gray, thresholds[j], SAUVOLA, 12, 12, 0.18 * k);
-        bitwise_not(thresholds[j], thresholds[j]);
-      }
-    }
+    // #pragma omp parallel for schedule(static)
+    // for (int j=0; j < THRESHOLD_COUNT; j++) {
+    //   if (j == 1) {
+    //     int k = 0, win=18;
+    //     NiblackSauvolaWolfJolion(img_gray, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    //     bitwise_not(thresholds[j], thresholds[j]);
+    //   } else if (j == 2) {
+    //      int k = 1;
+    //      int win = 22;
+    //      NiblackSauvolaWolfJolion(img_gray, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    //      bitwise_not(thresholds[j], thresholds[j]);
+    //   } else if (j == 3) {
+    //     int k = 1;
+    //     NiblackSauvolaWolfJolion(img_gray, thresholds[j], SAUVOLA, 12, 12, 0.18 * k);
+    //     bitwise_not(thresholds[j], thresholds[j]);
+    //   }
+    // }
 
     // Adaptive
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 7, 3);
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 13, 3);
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 17, 3);
-    // timespec s, e;
+    timespec s, e;
 
-    // getTimeMonotonic(&s);
-    // // Wolf
-    // int k = 0, win=18;
-    // //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-    // //bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-    // bitwise_not(thresholds[i-1], thresholds[i-1]);
+    getTimeMonotonic(&s);
+    // Wolf
+    int k = 0, win=18;
+    //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    //bitwise_not(thresholds[i-1], thresholds[i-1]);
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    getTimeMonotonic(&e);
 
-    // getTimeMonotonic(&e);
-
-    // cout << "OpenALPR NiblackSauvolaWolfJolion Time #1: " << diffclock(s, e) << "ms." << endl;
-
-    // getTimeMonotonic(&s);
-    // k = 1;
-    // win = 22;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-    // bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-    // //bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // getTimeMonotonic(&e);
-
-    // cout << "OpenALPR NiblackSauvolaWolfJolion Time #2: " << diffclock(s, e) << "ms." << endl;
+    cout << "  -- NiblackSauvolaWolfJolion Time #1: " << diffclock(s, e) << "ms." << endl;
+    bitwise_not(thresholds[i-1], thresholds[i-1]);
 
 
-    // getTimeMonotonic(&s);
-    // // Sauvola
-    // k = 1;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    // bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // //k=2;
-    // //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    // //bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // getTimeMonotonic(&e);
 
-    // cout << "OpenALPR NiblackSauvolaWolfJolion Time #3: " << diffclock(s, e) << "ms." << endl;
+    getTimeMonotonic(&s);
+    k = 1;
+    win = 22;
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    getTimeMonotonic(&e);
+
+    cout << "  -- NiblackSauvolaWolfJolion Time #2: " << diffclock(s, e) << "ms." << endl;
+    bitwise_not(thresholds[i-1], thresholds[i-1]);
+    //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    //bitwise_not(thresholds[i-1], thresholds[i-1]);
+
+
+
+    getTimeMonotonic(&s);
+    // Sauvola
+    k = 1;
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+    getTimeMonotonic(&e);
+
+    cout << "  -- NiblackSauvolaWolfJolion Time #3: " << diffclock(s, e) << "ms." << endl;
+    bitwise_not(thresholds[i-1], thresholds[i-1]);
+    //k=2;
+    //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+    //bitwise_not(thresholds[i-1], thresholds[i-1]);
+
 
 
 

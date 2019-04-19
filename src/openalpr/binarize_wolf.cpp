@@ -32,6 +32,9 @@
  **************************************************************/
 
 #include "binarize_wolf.h"
+#include "support/timing.h"
+// #include <atomic>
+#include <omp.h>
 
 using namespace std;
 using namespace cv;
@@ -43,12 +46,17 @@ namespace alpr
   // glide a window across the image and
   // create two maps: mean and standard deviation.
   // *************************************************************
+  double calcLocalStats (Mat &im, Mat &map_m, Mat &map_s, int winx, int winy) {
+      double global_max_s = 0;
 
-  double calcLocalStats (Mat &im, Mat &map_m, Mat &map_s, int winx, int winy) {    
-      Mat im_sum, im_sum_sq;
-      cv::integral(im,im_sum,im_sum_sq,CV_64F);
+      // std::atomic<double> global_max_s = 0;
+      #pragma omp parallel
+      {
+          Mat im_sum, im_sum_sq;
+          cv::integral(im,im_sum,im_sum_sq,CV_64F);
 
-          double m,s,max_s,sum,sum_sq;	
+          double m,s,max_s,sum,sum_sq;
+          // double m,s,sum,sum_sq;
           int wxh	= winx/2;
           int wyh	= winy/2;
           int x_firstth= wxh;
@@ -56,12 +64,12 @@ namespace alpr
           int y_firstth= wyh;
           double winarea = winx*winy;
 
-          max_s = 0;
-          for	(int j = y_firstth ; j<=y_lastth; j++){   
-                  sum = sum_sq = 0;
+          #pragma omp for schedule(static)
+          for	(int j = y_firstth ; j<=y_lastth; j++){
+            sum = sum_sq = 0;
 
-          sum = im_sum.at<double>(j-wyh+winy,winx) - im_sum.at<double>(j-wyh,winx) - im_sum.at<double>(j-wyh+winy,0) + im_sum.at<double>(j-wyh,0);
-          sum_sq = im_sum_sq.at<double>(j-wyh+winy,winx) - im_sum_sq.at<double>(j-wyh,winx) - im_sum_sq.at<double>(j-wyh+winy,0) + im_sum_sq.at<double>(j-wyh,0);
+            sum = im_sum.at<double>(j-wyh+winy,winx) - im_sum.at<double>(j-wyh,winx) - im_sum.at<double>(j-wyh+winy,0) + im_sum.at<double>(j-wyh,0);
+            sum_sq = im_sum_sq.at<double>(j-wyh+winy,winx) - im_sum_sq.at<double>(j-wyh,winx) - im_sum_sq.at<double>(j-wyh+winy,0) + im_sum_sq.at<double>(j-wyh,0);
 
                   m  = sum / winarea;
                   s  = sqrt ((sum_sq - m*sum)/winarea);
@@ -89,7 +97,13 @@ namespace alpr
                   }
           }
 
-          return max_s;
+          #pragma omp critical
+          if (max_s > global_max_s)
+            global_max_s = max_s;
+        }
+        cout << "  -- max_s Time: " << global_max_s << endl;
+
+        return global_max_s;
   }
 
   /**********************************************************
@@ -99,7 +113,7 @@ namespace alpr
 void NiblackSauvolaWolfJolion (Mat im, Mat output, NiblackVersion version,
 	int winx, int winy, double k, double dR) {
 
-	
+  timespec start, end;
 	double m, s, max_s;
 	double th=0;
 	double min_I, max_I;
@@ -114,12 +128,17 @@ void NiblackSauvolaWolfJolion (Mat im, Mat output, NiblackVersion version,
 	// Create local statistics and store them in a double matrices
 	Mat map_m = Mat::zeros (im.rows, im.cols, CV_32F);
 	Mat map_s = Mat::zeros (im.rows, im.cols, CV_32F);
+  getTimeMonotonic(&start);
 	max_s = calcLocalStats (im, map_m, map_s, winx, winy);
-	
+
 	minMaxLoc(im, &min_I, &max_I);
-			
+
+  getTimeMonotonic(&end);
+
+  cout << "  -- binarization Time: " << diffclock(start, end) << "ms." << endl;
+
 	Mat thsurf (im.rows, im.cols, CV_32F);
-			
+
 	// Create the threshold surface, including border processing
 	// ----------------------------------------------------
 
@@ -145,12 +164,12 @@ void NiblackSauvolaWolfJolion (Mat im, Mat output, NiblackVersion version,
     			case WOLFJOLION:
     				th = m + k * (s/max_s-1) * (m-min_I);
     				break;
-    				
+
     			default:
     				cerr << "Unknown threshold type in ImageThresholder::surfaceNiblackImproved()\n";
     				exit (1);
     		}
-    		
+
     		thsurf.fset(i+wxh,j,th);
 
     		if (i==0) {
@@ -198,10 +217,10 @@ void NiblackSauvolaWolfJolion (Mat im, Mat output, NiblackVersion version,
 			for (int i=x_lastth; i<im.cols; ++i)
 				thsurf.fset(i,u,th);
 	}
-	
-	
-	for	(int y=0; y<im.rows; ++y) 
-	for	(int x=0; x<im.cols; ++x) 
+
+
+	for	(int y=0; y<im.rows; ++y)
+	for	(int x=0; x<im.cols; ++x)
 	{
     	if (im.uget(x,y) >= thsurf.fget(x,y))
     	{
