@@ -237,6 +237,8 @@ namespace alpr
       std::cout << "recognize_line Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
     }
 
+
+    std::cout << "recognized_chars size: " << recognized_chars.size() << std::endl;
     return recognized_chars;
   }
 
