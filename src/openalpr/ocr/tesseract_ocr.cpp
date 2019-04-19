@@ -59,11 +59,14 @@ namespace alpr
   }
   
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
+    timespec startTime;
+    getTimeMonotonic(&startTime);
 
     const int SPACE_CHAR_CODE = 32;
     
     std::vector<OcrChar> recognized_chars;
     
+    std::cout << "========================== pipeline_data->thresholds.size(): " << pipeline_data->thresholds.size() << " ==========================" << std::endl;
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       // Make it black text on white background
@@ -80,7 +83,7 @@ namespace alpr
         Rect expandedRegion = expandRect( pipeline_data->charRegions[line_idx][j], 2, 2, pipeline_data->thresholds[i].cols, pipeline_data->thresholds[i].rows) ;
 
         tesseract.SetRectangle(expandedRegion.x, expandedRegion.y, expandedRegion.width, expandedRegion.height);
-        tesseract.Recognize(NULL);
+        tesseract.Recognize(NULL); // TODO: recognize
 
         tesseract::ResultIterator* ri = tesseract.GetIterator();
         tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;
@@ -152,6 +155,13 @@ namespace alpr
         absolute_charpos++;
       }
       
+    }
+
+    if (config->debugTiming)
+    {
+      timespec endTime;
+      getTimeMonotonic(&endTime);
+      std::cout << "recognize_line Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
     }
     
     return recognized_chars;
