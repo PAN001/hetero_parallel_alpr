@@ -797,6 +797,10 @@ namespace alpr
 
   Mat CharacterSegmenter::filterEdgeBoxes(vector<Mat> thresholds, const vector<Rect> charRegions, float avgCharWidth, float avgCharHeight)
   {
+    std::cout << "========================== CharacterSegmenter::filterEdgeBoxes ==========================" << std::endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+
     const float MIN_ANGLE_FOR_ROTATION = 0.4;
     int MIN_CONNECTED_EDGE_PIXELS = (avgCharHeight * 1.5);
 
@@ -957,6 +961,10 @@ namespace alpr
       
       return mask;
     }
+
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- filterEdgeBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
 
     return empty_mask;
   }
