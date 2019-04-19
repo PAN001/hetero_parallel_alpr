@@ -395,6 +395,11 @@ namespace alpr
 
   void CharacterSegmenter::removeSmallContours(vector<Mat> thresholds, float avgCharHeight,  TextLine textLine)
   {
+    std::cout << "========================== CharacterSegmenter::removeSmallContours ==========================" << std::endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+    
+
     //const float MIN_CHAR_AREA = 0.02 * avgCharWidth * avgCharHeight;	// To clear out the tiny specks
     const float MIN_CONTOUR_HEIGHT = config->segmentationMinSpeckleHeightPercent * avgCharHeight;
 
@@ -424,6 +429,10 @@ namespace alpr
         }
       }
     }
+
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- removeSmallContours Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
   }
   int CharacterSegmenter::getCharGap(cv::Rect leftBox, cv::Rect rightBox) {
       int right_midpoint = (rightBox.x + (rightBox.width / 2));
