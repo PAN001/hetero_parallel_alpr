@@ -55,7 +55,7 @@ namespace alpr
   }
   
   void CharacterSegmenter::segment() {
-
+    std::cout << "========================== CharacterSegmenter::segment ==========================" << std::endl;
     timespec startTime;
     getTimeMonotonic(&startTime);
     
