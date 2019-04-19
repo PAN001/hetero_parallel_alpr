@@ -42,17 +42,17 @@ namespace alpr
     // glide a window across the image and
     // create two maps: mean and standard deviation.
     // *************************************************************
-    double calcLocalStats (Mat &im, Mat &map_m, Mat &map_s, int winx, int winy) {    
+    double calcLocalStats (Mat &im, Mat &im_sum, Mat &im_sum_sq, Mat &map_m, Mat &map_s, int winx, int winy) {    
         std::cout << "========================== calcLocalStats ==========================" << std::endl;
         timespec startTime;
         getTimeMonotonic(&startTime);
 
-        Mat im_sum, im_sum_sq;
-        cv::integral(im,im_sum,im_sum_sq,CV_64F); // TODO: no need to calculated this everytime
+        // Mat im_sum, im_sum_sq;
+        // cv::integral(im,im_sum,im_sum_sq,CV_64F); // TODO: no need to calculated this everytime
 
-        timespec endTime;
-        getTimeMonotonic(&endTime);
-        cout << "cv::integral Time: " << diffclock(startTime, endTime) << "ms." << endl;
+        // timespec endTime;
+        // getTimeMonotonic(&endTime);
+        // cout << "cv::integral Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
         double m,s,max_s,sum,sum_sq;  
         int wxh   = winx/2;
@@ -108,7 +108,7 @@ namespace alpr
     // Niblack’s algorithm calculates a threshold sur- face by gliding a rectangular window across the image. 
     // The threshold T for the center pixel of the window is computed using the mean m and the variance s of the gray values in the window:
     // T = m + k · s, where k is a constant set to −0.2.
-    void NiblackSauvolaWolfJolion (Mat im, Mat output, NiblackVersion version,
+    void NiblackSauvolaWolfJolion (Mat im, Mat im_sum, Mat im_sum_sq, Mat output, NiblackVersion version,
         int winx, int winy, double k, double dR) {
 
         double m, s, max_s;
@@ -125,7 +125,7 @@ namespace alpr
         // Create local statistics and store them in a double matrices
         Mat map_m = Mat::zeros (im.rows, im.cols, CV_32F); // mean of the gray values in the window
         Mat map_s = Mat::zeros (im.rows, im.cols, CV_32F); // variance of the gray values in the window
-        max_s = calcLocalStats (im, map_m, map_s, winx, winy);
+        max_s = calcLocalStats (im, im_sum, im_sum_sq, map_m, map_s, winx, winy);
         
         minMaxLoc(im, &min_I, &max_I);
                 

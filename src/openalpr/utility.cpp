@@ -133,6 +133,9 @@ namespace alpr
     for (int i = 0; i < THRESHOLD_COUNT; i++)
       thresholds.push_back(Mat(img_gray.size(), CV_8U));
 
+    Mat im_sum, im_sum_sq;
+    integral(im, im_sum, im_sum_sq, CV_64F);
+
     int i = 0; // TODO: what's this used for?
     #pragma omp parallel for schedule(static)
     for (int j=0; j < THRESHOLD_COUNT; j++) {
@@ -141,16 +144,16 @@ namespace alpr
 
       if (j == 0) {
         int k = 0, win=18;
-        NiblackSauvolaWolfJolion(img_gray, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+        NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
         bitwise_not(thresholds[j], thresholds[j]);
       } else if (j == 1) {
          int k = 1;
          int win = 22;
-         NiblackSauvolaWolfJolion(img_gray, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+         NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
          bitwise_not(thresholds[j], thresholds[j]);
       } else if (j == 2) {
         int k = 1;
-        NiblackSauvolaWolfJolion(img_gray, thresholds[j], SAUVOLA, 12, 12, 0.18 * k);
+        NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, thresholds[j], SAUVOLA, 12, 12, 0.18 * k);
         bitwise_not(thresholds[j], thresholds[j]);
       }
     }
