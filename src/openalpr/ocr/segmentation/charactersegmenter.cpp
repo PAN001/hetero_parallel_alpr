@@ -30,6 +30,7 @@ namespace alpr
 
   CharacterSegmenter::CharacterSegmenter(PipelineData* pipeline_data)
   {
+    std::cout << "========================== CharacterSegmenter::CharacterSegmenter ==========================" << std::endl;
     this->pipeline_data = pipeline_data;
     this->config = pipeline_data->config;
 
