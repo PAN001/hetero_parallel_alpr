@@ -49,7 +49,8 @@ namespace alpr
     
     loadRecognizers();
 
-    setNumThreads(0);
+    setNumThreads(0); // opencv
+    omp_set_num_threads(config->thread_cnt);
 
     setDetectRegion(DEFAULT_DETECT_REGION);
     this->topN = DEFAULT_TOPN;

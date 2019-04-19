@@ -282,10 +282,9 @@ int main( int argc, const char** argv )
     {
       if (fileExists(filename.c_str()))
       {
-        std::cout << "Here" << std::endl; 
         frame = cv::imread(filename);
 
-        // TODO: entry point
+        // Trace: entry point
         bool plate_found = detectandshow(&alpr, frame, "", outputJson);
 
         if (!plate_found && !outputJson)
