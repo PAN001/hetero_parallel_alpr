@@ -95,6 +95,7 @@ namespace alpr
             }
         }
 
+        timespec endTime;
         getTimeMonotonic(&endTime);
         cout << "calcLocalStats Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
