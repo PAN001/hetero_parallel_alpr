@@ -5,6 +5,7 @@ set(CMAKE_BUILD_TYPE RelWithDebugInfo)
 
 cmake_minimum_required (VERSION 2.6)
 
+SET(OpenCV_DIR "/home/ubuntu/opencv/local/lib")
 # Set the OpenALPR version in cmake, and also add it as a DEFINE for the code to access
 SET(OPENALPR_MAJOR_VERSION "2")
 SET(OPENALPR_MINOR_VERSION "3")
@@ -104,9 +105,18 @@ ELSE()
     HINTS ${CMAKE_SOURCE_DIR}/../libraries/opencv/
     /storage/projects/alpr/libraries/opencv/
     )
+  message("1 - OpenCV: ${OpenCV_DIR}")
   # Opencv Package
-  FIND_PACKAGE( OpenCV REQUIRED )
+  FIND_PACKAGE( OpenCV REQUIRED PATHS /home/ubuntu/opencv/local/  NO_DEFAULT_PATH)
+message("2 - OpenCV: ${OpenCV_DIR}")
 ENDIF()
+#SET(OpenCV_DIR "/home/ubuntu/opencv/local/lib")
+
+message("OpenCV: ${OpenCV_DIR}")
+message(STATUS "OpenCV library status:")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBS}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 IF (${OpenCV_VERSION} VERSION_LESS 2.4.7)
 	MESSAGE(FATAL_ERROR "OpenCV version is not compatible : ${OpenCV_VERSION}")
@@ -136,6 +146,7 @@ ELSE()
 
 ENDIF()
 
+# SET(OpenCV_DIR "/usr/local/lib")
 
 set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall ")
 if (NOT IOS)
@@ -243,6 +254,7 @@ IF (WITH_DAEMON)
   install (TARGETS    alprd DESTINATION  ${CMAKE_INSTALL_PREFIX}/bin)
 ENDIF()
 
+message(STATUS ${OpenCV_INCLUDE_DIR})
 
 SET (CPACK_PACKAGE_VERSION ${OPENALPR_VERSION})
 SET (CPACK_SET_DESTDIR "on")
