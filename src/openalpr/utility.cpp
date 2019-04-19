@@ -134,7 +134,7 @@ namespace alpr
       thresholds.push_back(Mat(img_gray.size(), CV_8U));
 
     Mat im_sum, im_sum_sq;
-    integral(im, im_sum, im_sum_sq, CV_64F);
+    integral(img_gray, im_sum, im_sum_sq, CV_64F);
 
     int i = 0; // TODO: what's this used for?
     #pragma omp parallel for schedule(static)
