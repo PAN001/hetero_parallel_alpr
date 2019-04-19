@@ -355,20 +355,20 @@ namespace alpr
       }
     }
 
-    // if (this->config->debugCharSegmenter)
-    // {
-    //   cvtColor(histoImg, histoImg, CV_GRAY2BGR);
-    //   line(histoImg, Point(0, histoImg.rows - 1 - bestRowIndex), Point(histoImg.cols, histoImg.rows - 1 - bestRowIndex), Scalar(0, 255, 0));
+    if (this->config->debugCharSegmenter)
+    {
+      cvtColor(histoImg, histoImg, CV_GRAY2BGR);
+      line(histoImg, Point(0, histoImg.rows - 1 - bestRowIndex), Point(histoImg.cols, histoImg.rows - 1 - bestRowIndex), Scalar(0, 255, 0));
 
-    //   Mat imgBestBoxes(img.size(), img.type());
-    //   img.copyTo(imgBestBoxes);
-    //   cvtColor(imgBestBoxes, imgBestBoxes, CV_GRAY2BGR);
-    //   for (unsigned int i = 0; i < bestBoxes.size(); i++)
-    //     rectangle(imgBestBoxes, bestBoxes[i], Scalar(0, 255, 0));
+      Mat imgBestBoxes(img.size(), img.type());
+      img.copyTo(imgBestBoxes);
+      cvtColor(imgBestBoxes, imgBestBoxes, CV_GRAY2BGR);
+      for (unsigned int i = 0; i < bestBoxes.size(); i++)
+        rectangle(imgBestBoxes, bestBoxes[i], Scalar(0, 255, 0));
 
-    //   this->imgDbgGeneral.push_back(addLabel(histoImg, "All Histograms"));
-    //   this->imgDbgGeneral.push_back(addLabel(imgBestBoxes, "Best Boxes"));
-    // }
+      this->imgDbgGeneral.push_back(addLabel(histoImg, "All Histograms"));
+      this->imgDbgGeneral.push_back(addLabel(imgBestBoxes, "Best Boxes"));
+    }
 
     timespec endTime;
     getTimeMonotonic(&endTime);
