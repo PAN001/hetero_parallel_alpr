@@ -355,6 +355,10 @@ namespace alpr
       }
     }
 
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- getBestCharBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
+
     if (this->config->debugCharSegmenter)
     {
       cvtColor(histoImg, histoImg, CV_GRAY2BGR);
@@ -370,10 +374,6 @@ namespace alpr
       this->imgDbgGeneral.push_back(addLabel(imgBestBoxes, "Best Boxes"));
     }
 
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    std::cout << "  -- getBestCharBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
-    
     return bestBoxes;
   }
 
