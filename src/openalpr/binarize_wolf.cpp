@@ -65,12 +65,12 @@ namespace alpr
         double max_s = 0;
 
         // #pragma omp parallel for schedule(static) reduction(max:max_s)
-        #pragma omp parallel num_threads(4)
+        #pragma omp parallel num_threads(4) reduction(max:max_s)
         {  
             int total_threads_cnt = omp_get_num_threads();
             int thread_id = omp_get_thread_num();
-            cout << "total_threads_cnt: " << total_threads_cnt << endl;
-            cout << "thread_id: " << thread_id << endl;
+            // cout << "total_threads_cnt: " << total_threads_cnt << endl;
+            // cout << "thread_id: " << thread_id << endl;
 
             int total_cnt = y_lastth + 1 - y_firstth;
             for(int j = y_firstth + (total_cnt / total_threads_cnt) * thread_id;j < y_firstth + (total_cnt / total_threads_cnt) * (thread_id + 1);j++) {
