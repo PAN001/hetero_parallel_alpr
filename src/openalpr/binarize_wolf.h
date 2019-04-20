@@ -21,7 +21,7 @@
 #define OPENALPR_BINARIZEWOLF_H
 
 #include "support/filesystem.h"
-
+#include "support/timing.h"
 #include "opencv2/opencv.hpp"
 
 namespace alpr
