@@ -34,53 +34,81 @@ namespace alpr
   {
     const string MINIMUM_TESSERACT_VERSION = "3.03";
 
+    timespec s, e;
+    getTimeMonotonic(&s);
+
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
-    
+    getTimeMonotonic(&e);
+
+    cout << "OpenALPR setConfidenceThreshold Time: " << diffclock(s, e) << "ms." << endl;
+
+
+
+
     if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
     {
       std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
       std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
     }
 
+
+    getTimeMonotonic(&s);
     string TessdataPrefix = config->getTessdataPrefix();
     if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
-      TessdataPrefix += "tessdata/";    
+      TessdataPrefix += "tessdata/";
+
+    getTimeMonotonic(&e);
+
+    cout << "OpenALPR getTessdataPrefix Time: " << diffclock(s, e) << "ms." << endl;
 
     // Tesseract requires the prefix directory to be set as an env variable
+    getTimeMonotonic(&s);
     tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str() 	);
+    getTimeMonotonic(&e);
+
+    cout << "OpenALPR Init Time: " << diffclock(s, e) << "ms." << endl;
+
+    getTimeMonotonic(&s);
     tesseract.SetVariable("save_blob_choices", "T");
     tesseract.SetVariable("debug_file", "/dev/null");
     tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
+    getTimeMonotonic(&e);
+
+    cout << "OpenALPR SetVariable Time: " << diffclock(s, e) << "ms." << endl;
   }
 
   TesseractOcr::~TesseractOcr()
   {
     tesseract.End();
   }
-  
+
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
+    timespec startTime;
+    getTimeMonotonic(&startTime);
 
     const int SPACE_CHAR_CODE = 32;
-    
+
     std::vector<OcrChar> recognized_chars;
-    
+
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       // Make it black text on white background
       bitwise_not(pipeline_data->thresholds[i], pipeline_data->thresholds[i]);
-      tesseract.SetImage((uchar*) pipeline_data->thresholds[i].data, 
-                          pipeline_data->thresholds[i].size().width, pipeline_data->thresholds[i].size().height, 
+      tesseract.SetImage((uchar*) pipeline_data->thresholds[i].data,
+                          pipeline_data->thresholds[i].size().width, pipeline_data->thresholds[i].size().height,
                           pipeline_data->thresholds[i].channels(), pipeline_data->thresholds[i].step1());
 
- 
+
       int absolute_charpos = 0;
+
+      std::cout << " OCR charRegions size: " <<  pipeline_data->charRegions[line_idx].size() << std::endl;
 
       for (unsigned int j = 0; j < pipeline_data->charRegions[line_idx].size(); j++)
       {
         Rect expandedRegion = expandRect( pipeline_data->charRegions[line_idx][j], 2, 2, pipeline_data->thresholds[i].cols, pipeline_data->thresholds[i].rows) ;
 
         tesseract.SetRectangle(expandedRegion.x, expandedRegion.y, expandedRegion.width, expandedRegion.height);
-        tesseract.Recognize(NULL);
+        tesseract.Recognize(NULL); // TODO: recognize
 
         tesseract::ResultIterator* ri = tesseract.GetIterator();
         tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;
@@ -111,19 +139,19 @@ namespace alpr
             do
             {
               const char* choice = ci.GetUTF8Text();
-              
+
               OcrChar c2;
               c2.char_index = absolute_charpos;
               c2.confidence = ci.Confidence();
               c2.letter = string(choice);
-              
+
               //1/17/2016 adt adding check to avoid double adding same character if ci is same as symbol. Otherwise first choice from ResultsIterator will get added twice when choiceIterator run.
               if (string(symbol) != string(choice))
                 recognized_chars.push_back(c2);
               else
               {
                 // Explictly double-adding the first character.  This leads to higher accuracy right now, likely because other sections of code
-                // have expected it and compensated. 
+                // have expected it and compensated.
                 // TODO: Figure out how to remove this double-counting of the first letter without impacting accuracy
                 recognized_chars.push_back(c2);
               }
@@ -135,8 +163,7 @@ namespace alpr
               }
 
               indent = true;
-            }
-            while(ci.Next());
+            } while(ci.Next());
 
           }
 
@@ -151,13 +178,20 @@ namespace alpr
 
         absolute_charpos++;
       }
-      
+
     }
-    
+
+    if (config->debugTiming)
+    {
+      timespec endTime;
+      getTimeMonotonic(&endTime);
+      std::cout << "recognize_line Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
+    }
+
     return recognized_chars;
   }
   void TesseractOcr::segment(PipelineData* pipeline_data) {
-
+    std::cout << "======== OCR TesseractOcr::segment " << std::endl;
     CharacterSegmenter segmenter(pipeline_data);
     segmenter.segment();
   }

@@ -21,7 +21,7 @@
 
 namespace alpr
 {
-  
+
   OCR::OCR(Config* config) : postProcessor(config) {
     this->config = config;
   }
@@ -30,38 +30,58 @@ namespace alpr
   OCR::~OCR() {
   }
 
-  
+
   void OCR::performOCR(PipelineData* pipeline_data)
   {
-    
+    timespec s, e;
+    std::cout << "========================== OCR::performOCR ==========================" << std::endl;
     timespec startTime;
     getTimeMonotonic(&startTime);
 
+    getTimeMonotonic(&s);
     segment(pipeline_data);
-    
+
+    getTimeMonotonic(&e);
+    std::cout << "======== OCR segment: " << diffclock(s, e) << "ms." << std::endl;
+
+    getTimeMonotonic(&s);
     postProcessor.clear();
+    getTimeMonotonic(&e);
+    std::cout << "======== OCR clear: " << diffclock(s, e) << "ms." << std::endl;
 
 
     int absolute_charpos = 0;
+    std::cout << "========================== OCR::pipeline_data->textLines.size(): " << pipeline_data->textLines.size() << " ==========================" << std::endl;
     for (unsigned int line_idx = 0; line_idx < pipeline_data->textLines.size(); line_idx++)
     {
+      getTimeMonotonic(&s);
       std::vector<OcrChar> chars = recognize_line(line_idx, pipeline_data);
-      
+      getTimeMonotonic(&e);
+      std::cout << "======== OCR recognize_line: " << diffclock(s, e) << "ms." << std::endl;
+
+      std::cout << "========================== OCR::pipeline_data->chars.size(): " << chars.size() << " ==========================" << std::endl;
+      getTimeMonotonic(&s);
       for (uint32_t i = 0; i < chars.size(); i++)
       {
+
         // For multi-line plates, set the character indexes to sequential values based on the line number
         int line_ordered_index = (line_idx * config->postProcessMaxCharacters) + chars[i].char_index;
+
+        // std::cout << "========================== OCR::addLetter: " << line_idx << " " << line_ordered_index << std::endl;
+
         postProcessor.addLetter(chars[i].letter, line_idx, line_ordered_index, chars[i].confidence);
         absolute_charpos++;
       }
+      getTimeMonotonic(&e);
+      std::cout << "======== OCR addLetter: " << diffclock(s, e) << "ms." << std::endl;
     }
-    
+
 
     if (config->debugTiming)
     {
       timespec endTime;
       getTimeMonotonic(&endTime);
-      std::cout << "OCR Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
+      std::cout << "======== OCR Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
     }
   }
 }

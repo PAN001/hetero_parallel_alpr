@@ -49,7 +49,7 @@ namespace alpr
     
     loadRecognizers();
 
-    setNumThreads(0);
+    setNumThreads(2);
 
     setDetectRegion(DEFAULT_DETECT_REGION);
     this->topN = DEFAULT_TOPN;

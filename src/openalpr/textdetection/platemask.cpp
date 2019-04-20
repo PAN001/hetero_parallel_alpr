@@ -18,6 +18,7 @@
 */
 
 #include "platemask.h"
+#include <omp.h>
 
 using namespace std;
 using namespace cv;
@@ -53,6 +54,7 @@ namespace alpr
     if (pipeline_data->config->debugCharAnalysis)
       cout << "CharacterAnalysis::findOuterBoxMask" << endl;
 
+    #pragma omp parallel for schedule(static)
     for (unsigned int imgIndex = 0; imgIndex < contours.size(); imgIndex++)
     {
       //vector<bool> charContours = filter(thresholds[imgIndex], allContours[imgIndex], allHierarchy[imgIndex]);
@@ -87,9 +89,9 @@ namespace alpr
   		bestParentId = i;
   	   }
   	}
-      	
+
   	double boxArea = contourArea(contours[imgIndex].contours[bestParentId]);
-  	
+
         if (boxArea < min_parent_area)
           continue;
 
