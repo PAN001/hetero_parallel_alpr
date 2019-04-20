@@ -69,11 +69,11 @@ namespace alpr
         {  
             int total_threads_cnt = omp_get_num_threads();
             int thread_id = omp_get_thread_num();
-            std:cout << "total_threads_cnt: " << total_threads_cnt << std::endl;
-            std:cout << "thread_id: " << thread_id << std::endl;
+            cout << "total_threads_cnt: " << total_threads_cnt << endl;
+            cout << "thread_id: " << thread_id << endl;
 
             int total_cnt = y_lastth + 1 - y_firstth;
-            for(int j = y_firstth + (total_cnt / total_threads_cnt) * thread_id;j < y_firstth + (total_cnt / total_threads_cnt) * (thread_id + 1);j++)
+            for(int j = y_firstth + (total_cnt / total_threads_cnt) * thread_id;j < y_firstth + (total_cnt / total_threads_cnt) * (thread_id + 1);j++) {
             // for(int j = y_firstth ; j<=y_lastth; j++) { 
                 double m,s,sum,sum_sq;  
                 sum = sum_sq = 0;
