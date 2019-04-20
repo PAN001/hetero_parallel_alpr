@@ -64,7 +64,7 @@ namespace alpr
 
         max_s = 0;
 
-        #pragma omp for schedule(static) for reduction(max:max_s)
+        #pragma omp for schedule(static) reduction(max:max_s)
         for(int j = y_firstth ; j<=y_lastth; j++) {   
             sum = sum_sq = 0;
 
