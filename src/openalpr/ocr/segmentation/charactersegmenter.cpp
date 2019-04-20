@@ -694,6 +694,8 @@ namespace alpr
 
   vector<Rect> CharacterSegmenter::filterMostlyEmptyBoxes(vector<Mat> thresholds, const vector<Rect> charRegions)
   {
+    timespec startTime;
+    getTimeMonotonic(&startTime);
     // Of the n thresholded images, if box 3 (for example) is empty in half (for example) of the thresholded images,
     // clear all data for every box #3.
 
@@ -784,6 +786,10 @@ namespace alpr
       if (this->config->debugCharSegmenter)
         cout << " Box Score: " << boxScores[i] << endl;
     }
+
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- filterMostlyEmptyBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
 
     return newCharRegions;
   }
