@@ -41,6 +41,7 @@ namespace alpr
     // parallel
     tesseracts = (tesseract::TessBaseAPI*) malloc(sizeof(tesseract::TessBaseAPI) * config->thread_cnt);
     for(i = 0;i < config->thread_cnt;i++) {
+        tesseracts[i] = TessBaseAPI();
         if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
         {
           std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
