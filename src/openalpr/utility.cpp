@@ -182,8 +182,6 @@ namespace alpr
     //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     //bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-
-
     getTimeMonotonic(&s);
     // Sauvola
     k = 1;
