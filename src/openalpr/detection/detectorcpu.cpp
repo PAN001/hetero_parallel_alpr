@@ -52,7 +52,7 @@ namespace alpr
   
   vector<Rect> DetectorCPU::find_plates(Mat frame, cv::Size min_plate_size, cv::Size max_plate_size)
   {
-    std::cout << "========================== DetectorCPU::find_plates ==========================" << endl;
+
     vector<Rect> plates;
    
     //-- Detect plates

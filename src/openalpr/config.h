@@ -152,8 +152,6 @@ namespace alpr
 
       bool setCountry(std::string country);
 
-      int thread_cnt;
-
     private:
     
       float ocrImagePercent;

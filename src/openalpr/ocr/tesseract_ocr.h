@@ -51,8 +51,8 @@ namespace alpr
       std::vector<OcrChar> recognize_line(int line_index, PipelineData* pipeline_data);
       void segment(PipelineData* pipeline_data);
     
-      tesseract::TessBaseAPI tesseracts[4];
-      // tesseract::TessBaseAPI tesseract;
+      tesseract::TessBaseAPI tesseract;
+
   };
 
 }

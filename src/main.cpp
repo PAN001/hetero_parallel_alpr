@@ -57,7 +57,6 @@ bool program_active = true;
 
 int main( int argc, const char** argv )
 {
-  std::cout << "starts" << std::endl;
   std::vector<std::string> filenames;
   std::string configFile = "";
   bool outputJson = false;
@@ -284,7 +283,6 @@ int main( int argc, const char** argv )
       {
         frame = cv::imread(filename);
 
-        // Trace: entry point
         bool plate_found = detectandshow(&alpr, frame, "", outputJson);
 
         if (!plate_found && !outputJson)
@@ -351,7 +349,6 @@ bool detectandshow( Alpr* alpr, cv::Mat frame, std::string region, bool writeJso
   }
   else regionsOfInterest.push_back(AlprRegionOfInterest(0, 0, frame.cols, frame.rows));
   AlprResults results;
-  // TODO: Step 0: recognize
   if (regionsOfInterest.size()>0) results = alpr->recognize(frame.data, frame.elemSize(), frame.cols, frame.rows, regionsOfInterest);
 
   timespec endTime;

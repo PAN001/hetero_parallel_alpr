@@ -64,7 +64,7 @@ namespace alpr
 
   vector<PlateRegion> Detector::detect(Mat frame, std::vector<cv::Rect> regionsOfInterest)
   {
-    std::cout << "========================== Detector::detect ==========================" << endl;
+
     Mat frame_gray;
     
     if (frame.channels() > 2)

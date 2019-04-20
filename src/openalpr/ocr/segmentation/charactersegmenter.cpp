@@ -18,9 +18,8 @@
 */
 
 #include <opencv2/core/core.hpp>
-#include <omp.h>
-#include "charactersegmenter.h"
 
+#include "charactersegmenter.h"
 
 using namespace cv;
 using namespace std;
@@ -30,7 +29,6 @@ namespace alpr
 
   CharacterSegmenter::CharacterSegmenter(PipelineData* pipeline_data)
   {
-    std::cout << "========================== CharacterSegmenter::CharacterSegmenter ==========================" << std::endl;
     this->pipeline_data = pipeline_data;
     this->config = pipeline_data->config;
 
@@ -57,7 +55,7 @@ namespace alpr
   }
   
   void CharacterSegmenter::segment() {
-    std::cout << "========================== CharacterSegmenter::segment ==========================" << std::endl;
+
     timespec startTime;
     getTimeMonotonic(&startTime);
     
@@ -95,32 +93,43 @@ namespace alpr
       vector<Mat> allHistograms;
 
       vector<Rect> lineBoxes;
-      vector<Rect> lineBoxes_thread[config->thread_cnt];
-      #pragma omp parallel for schedule(static)
       for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
       {
-        int thread_id = omp_get_thread_num();
         Mat histogramMask = Mat::zeros(pipeline_data->thresholds[i].size(), CV_8U);
 
         fillConvexPoly(histogramMask, pipeline_data->textLines[lineidx].linePolygon.data(), pipeline_data->textLines[lineidx].linePolygon.size(), Scalar(255,255,255));
 
         HistogramVertical vertHistogram(pipeline_data->thresholds[i], histogramMask);
 
+//        if (this->config->debugCharSegmenter)
+//        {
+//          Mat histoCopy(vertHistogram.histoImg.size(), vertHistogram.histoImg.type());
+//          //vertHistogram.copyTo(histoCopy);
+//          cvtColor(vertHistogram.histoImg, histoCopy, CV_GRAY2RGB);
+//
+//          string label = "threshold: " + toString(i);
+//          allHistograms.push_back(addLabel(histoCopy, label));
+//          
+//          std::cout << histoCopy.cols << " x " << histoCopy.rows << std::endl;
+//        }
+
         float score = 0;
         vector<Rect> charBoxes = getHistogramBoxes(vertHistogram, avgCharWidth, avgCharHeight, &score);
 
-        for (unsigned int z = 0; z < charBoxes.size(); z++) {
-          // lineBoxes.push_back(charBoxes[z]);
-          lineBoxes_thread[thread_id].push_back(charBoxes[z]);
-        }
-        //drawAndWait(&histogramMask);
-      }
+//        if (this->config->debugCharSegmenter)
+//        {
+//          for (unsigned int cboxIdx = 0; cboxIdx < charBoxes.size(); cboxIdx++)
+//          {
+//            rectangle(allHistograms[i], charBoxes[cboxIdx], Scalar(0, 255, 0));
+//          }
+//
+//          Mat histDashboard = drawImageDashboard(allHistograms, allHistograms[0].type(), 1);
+//          displayImage(config, "Char seg histograms", histDashboard);
+//        }
 
-      // combine local lineBoxes
-      for(unsigned int i = 0;i < config->thread_cnt;i++) {
-        vector<Rect> cur_lineBoxes = lineBoxes_thread[i];
-        if(!cur_lineBoxes.empty())
-          lineBoxes.insert(lineBoxes.end(), cur_lineBoxes.begin(), cur_lineBoxes.end());
+        for (unsigned int z = 0; z < charBoxes.size(); z++)
+          lineBoxes.push_back(charBoxes[z]);
+        //drawAndWait(&histogramMask);
       }
 
 
@@ -184,7 +193,6 @@ namespace alpr
     }
     
     // Apply the edge mask (left and right ends) after all lines have been processed.
-    #pragma omp parallel for schedule(static)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       bitwise_and(pipeline_data->thresholds[i], edge_filter_mask, pipeline_data->thresholds[i]);
@@ -271,10 +279,6 @@ namespace alpr
 
   vector<Rect> CharacterSegmenter::getBestCharBoxes(Mat img, vector<Rect> charBoxes, float avgCharWidth)
   {
-    std::cout << "========================== CharacterSegmenter::getBestCharBoxes ==========================" << std::endl;
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-    
     float MAX_SEGMENT_WIDTH = avgCharWidth * config->segmentationMaxCharWidthvsAverage;
 
     // This histogram is based on how many char boxes (from ALL of the many thresholded images) are covering each column
@@ -370,10 +374,6 @@ namespace alpr
       }
     }
 
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    std::cout << "  -- getBestCharBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
-
     if (this->config->debugCharSegmenter)
     {
       cvtColor(histoImg, histoImg, CV_GRAY2BGR);
@@ -395,11 +395,6 @@ namespace alpr
 
   void CharacterSegmenter::removeSmallContours(vector<Mat> thresholds, float avgCharHeight,  TextLine textLine)
   {
-    std::cout << "========================== CharacterSegmenter::removeSmallContours ==========================" << std::endl;
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-    
-
     //const float MIN_CHAR_AREA = 0.02 * avgCharWidth * avgCharHeight;	// To clear out the tiny specks
     const float MIN_CONTOUR_HEIGHT = config->segmentationMinSpeckleHeightPercent * avgCharHeight;
 
@@ -429,10 +424,6 @@ namespace alpr
         }
       }
     }
-
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    std::cout << "  -- removeSmallContours Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
   }
   int CharacterSegmenter::getCharGap(cv::Rect leftBox, cv::Rect rightBox) {
       int right_midpoint = (rightBox.x + (rightBox.width / 2));
@@ -442,10 +433,6 @@ namespace alpr
 
   vector<Rect> CharacterSegmenter::combineCloseBoxes( vector<Rect> charBoxes)
   {
-    std::cout << "========================== CharacterSegmenter::combineCloseBoxes ==========================" << std::endl;
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-
     // Don't bother combining if there are fewer than the min number of characters
     if (charBoxes.size() < config->postProcessMinCharacters)
       return charBoxes;
@@ -535,27 +522,17 @@ namespace alpr
       }
     }
 
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    std::cout << "  -- combineCloseBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
-
     return newCharBoxes;
   }
 
   void CharacterSegmenter::cleanCharRegions(vector<Mat> thresholds, vector<Rect> charRegions)
   {
-    std::cout << "========================== CharacterSegmenter::cleanCharRegions ==========================" << std::endl;
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-
     const float MIN_SPECKLE_HEIGHT_PERCENT = 0.13;
     const float MIN_SPECKLE_WIDTH_PX = 3;
     const float MIN_CONTOUR_AREA_PERCENT = 0.1;
     const float MIN_CONTOUR_HEIGHT_PERCENT = config->segmentationMinCharHeightPercent;
 
     Mat mask = getCharBoxMask(thresholds[0], charRegions);
-
-    cout << "charRegions.size(): " << charRegions.size() << endl;
 
     for (unsigned int i = 0; i < thresholds.size(); i++)
     {
@@ -564,6 +541,13 @@ namespace alpr
 
       Mat tempImg(thresholds[i].size(), thresholds[i].type());
       thresholds[i].copyTo(tempImg);
+
+      //Mat element = getStructuringElement( 1,
+  //				    Size( 2 + 1, 2+1 ),
+  //				    Point( 1, 1 ) );
+      //dilate(thresholds[i], tempImg, element);
+      //morphologyEx(thresholds[i], tempImg, MORPH_CLOSE, element);
+      //drawAndWait(&tempImg);
 
       findContours(tempImg, contours, RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
@@ -653,10 +637,6 @@ namespace alpr
         line(thresholds[i], Point(charRegions[j].x + charRegions[j].width + 1, charRegions[j].y), Point(charRegions[j].x + charRegions[j].width + 1, charRegions[j].y + charRegions[j].height), Scalar(0, 0, 0));
       }
     }
-
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    std::cout << "  -- cleanCharRegions Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
   }
 
   void CharacterSegmenter::cleanBasedOnColor(vector<Mat> thresholds, Mat colorMask, vector<Rect> charRegions)
@@ -714,10 +694,6 @@ namespace alpr
 
   vector<Rect> CharacterSegmenter::filterMostlyEmptyBoxes(vector<Mat> thresholds, const vector<Rect> charRegions)
   {
-    std::cout << "========================== CharacterSegmenter::filterMostlyEmptyBoxes ==========================" << std::endl;
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-
     // Of the n thresholded images, if box 3 (for example) is empty in half (for example) of the thresholded images,
     // clear all data for every box #3.
 
@@ -732,8 +708,6 @@ namespace alpr
 
     for (unsigned int i = 0; i < thresholds.size(); i++)
     {
-      // Prallel has good performance
-      #pragma omp parallel for schedule(static)
       for (unsigned int j = 0; j < charRegions.size(); j++)
       {
         //float minArea = charRegions[j].area() * MIN_AREA_PERCENT;
@@ -811,19 +785,11 @@ namespace alpr
         cout << " Box Score: " << boxScores[i] << endl;
     }
 
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    std::cout << "  -- filterMostlyEmptyBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
-
     return newCharRegions;
   }
 
   Mat CharacterSegmenter::filterEdgeBoxes(vector<Mat> thresholds, const vector<Rect> charRegions, float avgCharWidth, float avgCharHeight)
   {
-    std::cout << "========================== CharacterSegmenter::filterEdgeBoxes ==========================" << std::endl;
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-
     const float MIN_ANGLE_FOR_ROTATION = 0.4;
     int MIN_CONNECTED_EDGE_PIXELS = (avgCharHeight * 1.5);
 
@@ -984,10 +950,6 @@ namespace alpr
       
       return mask;
     }
-
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    std::cout << "  -- filterEdgeBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
 
     return empty_mask;
   }
