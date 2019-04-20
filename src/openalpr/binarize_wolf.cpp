@@ -108,7 +108,8 @@ namespace alpr
         //     }
         // }
 
-
+        cout << "  --outerloop size: " << y_lastth - y_firstth << endl;
+        cout << "  --innerloop size: " << im.cols-winx - 1 << endl;
         for(int j = y_firstth ; j<=y_lastth; j++) { 
             double m,s,sum,sum_sq;  
             sum = sum_sq = 0;
@@ -145,7 +146,7 @@ namespace alpr
 
         timespec endTime;
         getTimeMonotonic(&endTime);
-        cout << "calcLocalStats Time: " << diffclock(startTime, endTime) << "ms." << endl;
+        cout << "  --calcLocalStats Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
         return max_s;
     }
@@ -278,6 +279,6 @@ namespace alpr
 
         timespec endTime;
         getTimeMonotonic(&endTime);
-        cout << "NiblackSauvolaWolfJolion Time: " << diffclock(startTime, endTime) << "ms." << endl;
+        cout << "  --NiblackSauvolaWolfJolion Time: " << diffclock(startTime, endTime) << "ms." << endl;
     }
 }
