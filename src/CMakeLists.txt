@@ -5,6 +5,7 @@ set(CMAKE_BUILD_TYPE RelWithDebugInfo)
 
 cmake_minimum_required (VERSION 2.6)
 
+SET(OpenCV_DIR "/home/ubuntu/opencv/local/lib")
 # Set the OpenALPR version in cmake, and also add it as a DEFINE for the code to access
 SET(OPENALPR_MAJOR_VERSION "2")
 SET(OPENALPR_MINOR_VERSION "3")
@@ -107,7 +108,6 @@ ELSE()
   # Opencv Package
   FIND_PACKAGE( OpenCV REQUIRED )
   #FIND_PACKAGE( OpenCV REQUIRED PATHS /home/ubuntu/opencv/local/  NO_DEFAULT_PATH)
-message("2 - OpenCV: ${OpenCV_DIR}")
 ENDIF()
 
 IF (${OpenCV_VERSION} VERSION_LESS 2.4.7)
@@ -118,6 +118,11 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_definitions( -DOPENCV_MAJOR_VERSION=${OpenCV_VERSION_MAJOR})
 
+message("OpenCV: ${OpenCV_DIR}")
+message(STATUS "OpenCV library status:")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBS}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 include_directories(./openalpr )
 
