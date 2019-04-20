@@ -65,7 +65,7 @@ namespace alpr
         double max_s = 0;
 
         // #pragma omp parallel for schedule(static) reduction(max:max_s)
-        #pragma omp parallel num_threads(4) reduction(max:max_s)
+        #pragma omp parallel num_threads(2) reduction(max:max_s)
         {  
             int total_threads_cnt = omp_get_num_threads();
             int thread_id = omp_get_thread_num();
@@ -162,9 +162,6 @@ namespace alpr
         int winx, int winy, double k, double dR) {
 
         std::cout << "========================== NiblackSauvolaWolfJolion ==========================" << std::endl;
-        timespec startTime;
-        getTimeMonotonic(&startTime);
-
         double m, s, max_s;
         double th=0;
         // double min_I, max_I;
@@ -183,6 +180,9 @@ namespace alpr
         
         // minMaxLoc(im, &min_I, &max_I);
                 
+        timespec startTime;
+        getTimeMonotonic(&startTime);
+
         Mat thsurf (im.rows, im.cols, CV_32F);
                 
         // Create the threshold surface, including border processing
@@ -279,6 +279,6 @@ namespace alpr
 
         timespec endTime;
         getTimeMonotonic(&endTime);
-        cout << "  --NiblackSauvolaWolfJolion Time: " << diffclock(startTime, endTime) << "ms." << endl;
+        cout << "  --NiblackSauvolaWolfJolion Time (exluces calcLocalStats): " << diffclock(startTime, endTime) << "ms." << endl;
     }
 }
