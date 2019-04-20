@@ -731,9 +731,10 @@ namespace alpr
     for (unsigned int i = 0; i < charRegions.size(); i++)
       boxScores[i] = 0;
 
+    #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < thresholds.size(); i++)
     {
-      // Prallel has good performance
+      // TODO: Prallel makes worse
       // #pragma omp parallel for schedule(static)
       for (unsigned int j = 0; j < charRegions.size(); j++)
       {
