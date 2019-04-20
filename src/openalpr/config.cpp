@@ -234,7 +234,7 @@ namespace alpr
     debugShowImages = 	getBoolean(ini, defaultIni, "", "debug_show_images",	false);
     debugPauseOnFrame = 	getBoolean(ini, defaultIni, "", "debug_pause_on_frame",	false);
 
-    thread_cnt = 4;
+    thread_cnt = 8;
   }
   
   

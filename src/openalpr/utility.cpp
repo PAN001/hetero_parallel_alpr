@@ -140,7 +140,8 @@ namespace alpr
     minMaxLoc(img_gray, &min_I, &max_I);
 
     int i = 0; // TODO: what's this used for?
-    #pragma omp parallel for schedule(static)
+    // #pragma omp parallel for schedule(static)
+    #pragma omp parallel for num_threads(THRESHOLD_COUNT)
     for (int j=0; j < THRESHOLD_COUNT; j++) {
       int thread_id = omp_get_thread_num();
       cout << "thread_id: " << thread_id << endl;
