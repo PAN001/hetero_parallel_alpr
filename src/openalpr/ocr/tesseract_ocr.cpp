@@ -38,55 +38,55 @@ namespace alpr
     const string MINIMUM_TESSERACT_VERSION = "3.03";
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
 
-    // parallel
-    // tesseracts = (tesseract::TessBaseAPI*) malloc(sizeof(tesseract::TessBaseAPI) * config->thread_cnt);
-    for(i = 0;i < config->threshold_cnt;i++) {
-        // tesseracts[i] = TessBaseAPI();
-        if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-        {
-          std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-          std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseracts[i].Version() << endl;
-        }
+    // // parallel
+    // // tesseracts = (tesseract::TessBaseAPI*) malloc(sizeof(tesseract::TessBaseAPI) * config->thread_cnt);
+    // for(i = 0;i < config->threshold_cnt;i++) {
+    //     // tesseracts[i] = TessBaseAPI();
+    //     if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+    //     {
+    //       std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+    //       std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseracts[i].Version() << endl;
+    //     }
 
-        string TessdataPrefix = config->getTessdataPrefix();
-        if (cmpVersion(tesseracts[i].Version(), "4.0.0") >= 0)
-          TessdataPrefix += "tessdata/";    
+    //     string TessdataPrefix = config->getTessdataPrefix();
+    //     if (cmpVersion(tesseracts[i].Version(), "4.0.0") >= 0)
+    //       TessdataPrefix += "tessdata/";    
 
-        std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
-        std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
-        // Tesseract requires the prefix directory to be set as an env variable
-        tesseracts[i].Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-        tesseracts[i].SetVariable("save_blob_choices", "T");
-        tesseracts[i].SetVariable("debug_file", "/dev/null");
-        tesseracts[i].SetPageSegMode(PSM_SINGLE_CHAR);
-    }
-
-    // // serialized
-    // if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
-    // {
-    //   std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
-    //   std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+    //     std::cout << "TessdataPrefix: " << TessdataPrefix << std::endl;
+    //     std::cout << "config->ocrLanguage.c_str(): " << config->ocrLanguage.c_str() << std::endl;
+    //     // Tesseract requires the prefix directory to be set as an env variable
+    //     tesseracts[i].Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+    //     tesseracts[i].SetVariable("save_blob_choices", "T");
+    //     tesseracts[i].SetVariable("debug_file", "/dev/null");
+    //     tesseracts[i].SetPageSegMode(PSM_SINGLE_CHAR);
     // }
 
-    // string TessdataPrefix = config->getTessdataPrefix();
-    // if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
-    //   TessdataPrefix += "tessdata/";    
+    // serialized
+    if (cmpVersion(tesseract.Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
+    {
+      std::cerr << "Warning: You are running an unsupported version of Tesseract." << endl;
+      std::cerr << "Expecting at least " << MINIMUM_TESSERACT_VERSION << ", your version is: " << tesseract.Version() << endl;
+    }
 
-    // // Tesseract requires the prefix directory to be set as an env variable
-    // tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
-    // tesseract.SetVariable("save_blob_choices", "T");
-    // tesseract.SetVariable("debug_file", "/dev/null");
-    // tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
+    string TessdataPrefix = config->getTessdataPrefix();
+    if (cmpVersion(tesseract.Version(), "4.0.0") >= 0)
+      TessdataPrefix += "tessdata/";    
+
+    // Tesseract requires the prefix directory to be set as an env variable
+    tesseract.Init(TessdataPrefix.c_str(), config->ocrLanguage.c_str()  );
+    tesseract.SetVariable("save_blob_choices", "T");
+    tesseract.SetVariable("debug_file", "/dev/null");
+    tesseract.SetPageSegMode(PSM_SINGLE_CHAR);
   }
 
   TesseractOcr::~TesseractOcr()
   {
-    int i;
-    for(i = 0;i < config->threshold_cnt;i++) {
-      tesseracts[i].End();
-    }
+    // int i;
+    // for(i = 0;i < config->threshold_cnt;i++) {
+    //   tesseracts[i].End();
+    // }
 
-    // tesseract.End();
+    tesseract.End();
     // free(tesseracts);
   }
   
@@ -106,7 +106,7 @@ namespace alpr
     // omp_set_nested(1);
     // omp_set_dynamic(0);
     // omp_set_num_threads(config->thread_cnt);
-    #pragma omp parallel for num_threads(config->threshold_cnt)
+    // #pragma omp parallel for num_threads(config->threshold_cnt)
     // #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
@@ -116,7 +116,7 @@ namespace alpr
       // printf("thread_id: %d i:%d \n", thread_id, i);
 
 
-      tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
+      // tesseract::TessBaseAPI& tesseract = tesseracts[thread_id];
       // std::cout << thread_id << " " << "DEBUG: 0" << std::endl;
 
       // Make it black text on white background
@@ -225,13 +225,13 @@ namespace alpr
       }
     }
 
-    // combine local recognized_chars
-    for(unsigned int i = 0;i < config->threshold_cnt;i++) {
-      std::vector<OcrChar> cur_recognized_chars = recognized_chars_thread[i];
+    // // combine local recognized_chars
+    // for(unsigned int i = 0;i < config->threshold_cnt;i++) {
+    //   std::vector<OcrChar> cur_recognized_chars = recognized_chars_thread[i];
 
-      if(!cur_recognized_chars.empty())
-        recognized_chars.insert(recognized_chars.end(), cur_recognized_chars.begin(), cur_recognized_chars.end());
-    }
+    //   if(!cur_recognized_chars.empty())
+    //     recognized_chars.insert(recognized_chars.end(), cur_recognized_chars.begin(), cur_recognized_chars.end());
+    // }
 
     if (config->debugTiming)
     {
