@@ -194,8 +194,8 @@ namespace alpr
                 // Explictly double-adding the first character.  This leads to higher accuracy right now, likely because other sections of code
                 // have expected it and compensated. 
                 // TODO: Figure out how to remove this double-counting of the first letter without impacting accuracy
-                // recognized_chars.push_back(c2);
-                recognized_chars_thread[thread_id].push_back(c);
+                recognized_chars.push_back(c2);
+                // recognized_chars_thread[thread_id].push_back(c);
               }
               if (this->config->debugOcr)
               {
