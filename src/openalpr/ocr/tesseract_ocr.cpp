@@ -39,7 +39,7 @@ namespace alpr
     this->postProcessor.setConfidenceThreshold(config->postProcessMinConfidence, config->postProcessConfidenceSkipLevel);
 
     // parallel
-    tesseracts = tesseract::TessBaseAPI[config->thread_cnt];
+    tesseracts = malloc(sizeof(tesseract::TessBaseAPI) * config->thread_cnt);
     for(i = 0;i < config->thread_cnt;i++) {
         if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
         {
@@ -86,6 +86,7 @@ namespace alpr
     }
 
     // tesseract.End();
+    free(tesseracts);
   }
   
   std::vector<OcrChar> TesseractOcr::recognize_line(int line_idx, PipelineData* pipeline_data) {
