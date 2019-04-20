@@ -22,6 +22,7 @@
 #include <iostream>
 #include <iterator>
 #include <algorithm>
+#include <omp.h>
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -48,7 +49,7 @@ bool do_motiondetection = true;
 bool detectandshow(Alpr* alpr, cv::Mat frame, std::string region, bool writeJson);
 bool is_supported_image(std::string image_file);
 
-bool measureProcessingTime = false;
+bool measureProcessingTime = true;
 std::string templatePattern;
 
 // This boolean is set to false when the user hits terminates (e.g., CTRL+C )
@@ -71,7 +72,7 @@ int main( int argc, const char** argv )
 
   TCLAP::UnlabeledMultiArg<std::string>  fileArg( "image_file", "Image containing license plates", true, "", "image_file_path"  );
 
-  
+
   TCLAP::ValueArg<std::string> countryCodeArg("c","country","Country code to identify (either us for USA or eu for Europe).  Default=us",false, "us" ,"country_code");
   TCLAP::ValueArg<int> seekToMsArg("","seek","Seek to the specified millisecond in a video file. Default=0",false, 0 ,"integer_ms");
   TCLAP::ValueArg<std::string> configFileArg("","config","Path to the openalpr.conf file",false, "" ,"config_file");
@@ -84,6 +85,9 @@ int main( int argc, const char** argv )
   TCLAP::SwitchArg clockSwitch("","clock","Measure/print the total time to process image and all plates.  Default=off", cmd, false);
   TCLAP::SwitchArg motiondetect("", "motion", "Use motion detection on video file or stream.  Default=off", cmd, false);
 
+  timespec startTime;
+  getTimeMonotonic(&startTime);
+
   try
   {
     cmd.add( templatePatternArg );
@@ -93,7 +97,7 @@ int main( int argc, const char** argv )
     cmd.add( fileArg );
     cmd.add( countryCodeArg );
 
-    
+
     if (cmd.parse( argc, argv ) == false)
     {
       // Error occurred while parsing.  Exit now.
@@ -119,12 +123,12 @@ int main( int argc, const char** argv )
     return 1;
   }
 
-  
+
   cv::Mat frame;
 
   Alpr alpr(country, configFile);
   alpr.setTopN(topn);
-  
+
   if (debug_mode)
   {
     alpr.getConfig()->setDebug(true);
@@ -186,13 +190,13 @@ int main( int argc, const char** argv )
     else if (filename == "webcam" || startsWith(filename, WEBCAM_PREFIX))
     {
       int webcamnumber = 0;
-      
+
       // If they supplied "/dev/video[number]" parse the "number" here
       if(startsWith(filename, WEBCAM_PREFIX) && filename.length() > WEBCAM_PREFIX.length())
       {
         webcamnumber = atoi(filename.substr(WEBCAM_PREFIX.length()).c_str());
       }
-      
+
       int framenum = 0;
       cv::VideoCapture cap(webcamnumber);
       if (!cap.isOpened())
@@ -256,22 +260,37 @@ int main( int argc, const char** argv )
         cap.open(filename);
         cap.set(CV_CAP_PROP_POS_MSEC, seektoms);
 
+        std::vector<cv::Mat> frame_array;
         while (cap.read(frame))
         {
           if (SAVE_LAST_VIDEO_STILL)
           {
             cv::imwrite(LAST_VIDEO_STILL_LOCATION, frame);
           }
-          if (!outputJson)
-            std::cout << "Frame: " << framenum << std::endl;
-          
-          if (framenum == 0)
-            motiondetector.ResetMotionDetection(&frame);
-          detectandshow(&alpr, frame, "", outputJson);
-          //create a 1ms delay
-          sleep_ms(1);
-          framenum++;
+          // if (!outputJson)
+          //   std::cout << "Frame: " << framenum << std::endl;
+
+          // if (framenum == 0)
+          //   motiondetector.ResetMotionDetection(&frame);
+          // detectandshow(&alpr, frame, "", outputJson);
+          // //create a 1ms delay
+          // sleep_ms(1);
+          // framenum++;
+          frame_array.push_back(frame.clone());
         }
+
+        #pragma omp parallel for schedule(static)
+        for (int i=0; i<frame_array.size(); i++) {
+          cv::Mat thread_frame = frame_array[i];
+
+          std::cout << "Frame: " << i  << " from thread: " << omp_get_thread_num() << std::endl;
+          if (i == 0)
+            motiondetector.ResetMotionDetection(&thread_frame);
+          detectandshow(&alpr, thread_frame, "", outputJson);
+          // create a 1ms delay
+          sleep_ms(1);
+        }
+         std::cout << "Video processing frame_array size: " << frame_array.size() << std::endl;
       }
       else
       {
@@ -282,7 +301,7 @@ int main( int argc, const char** argv )
     {
       if (fileExists(filename.c_str()))
       {
-        std::cout << "Here" << std::endl; 
+        std::cout << "Here" << std::endl;
         frame = cv::imread(filename);
 
         // TODO: entry point
@@ -327,13 +346,20 @@ int main( int argc, const char** argv )
     }
   }
 
+  timespec endTime;
+  getTimeMonotonic(&endTime);
+  double totalProcessingTime = diffclock(startTime, endTime);
+
+  // if (measureProcessingTime)
+  std::cout << "!!!!!! Total Time to process main: " << totalProcessingTime << "ms." << std::endl;
+
   return 0;
 }
 
 bool is_supported_image(std::string image_file)
 {
-  return (hasEndingInsensitive(image_file, ".png") || hasEndingInsensitive(image_file, ".jpg") || 
-	  hasEndingInsensitive(image_file, ".tif") || hasEndingInsensitive(image_file, ".bmp") ||  
+  return (hasEndingInsensitive(image_file, ".png") || hasEndingInsensitive(image_file, ".jpg") ||
+	  hasEndingInsensitive(image_file, ".tif") || hasEndingInsensitive(image_file, ".bmp") ||
 	  hasEndingInsensitive(image_file, ".jpeg") || hasEndingInsensitive(image_file, ".gif"));
 }
 
@@ -360,8 +386,8 @@ bool detectandshow( Alpr* alpr, cv::Mat frame, std::string region, bool writeJso
   double totalProcessingTime = diffclock(startTime, endTime);
   if (measureProcessingTime)
     std::cout << "Total Time to process image: " << totalProcessingTime << "ms." << std::endl;
-  
-  
+
+
   if (writeJson)
   {
     std::cout << alpr->toJson( results ) << std::endl;
@@ -377,17 +403,17 @@ bool detectandshow( Alpr* alpr, cv::Mat frame, std::string region, bool writeJso
 
       if (results.plates[i].regionConfidence > 0)
         std::cout << "State ID: " << results.plates[i].region << " (" << results.plates[i].regionConfidence << "% confidence)" << std::endl;
-      
+
       for (int k = 0; k < results.plates[i].topNPlates.size(); k++)
       {
         // Replace the multiline newline character with a dash
         std::string no_newline = results.plates[i].topNPlates[k].characters;
         std::replace(no_newline.begin(), no_newline.end(), '\n','-');
-        
+
         std::cout << "    - " << no_newline << "\t confidence: " << results.plates[i].topNPlates[k].overall_confidence;
         if (templatePattern.size() > 0 || results.plates[i].regionConfidence > 0)
           std::cout << "\t pattern_match: " << results.plates[i].topNPlates[k].matches_template;
-        
+
         std::cout << std::endl;
       }
     }

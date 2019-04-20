@@ -20,7 +20,7 @@
 #include "detectorcpu.h"
 
 #include <stdio.h>
-
+#include <omp.h>
 using namespace cv;
 using namespace std;
 
@@ -30,8 +30,8 @@ namespace alpr
 
   DetectorCPU::DetectorCPU(Config* config, PreWarp* prewarp) : Detector(config, prewarp) {
 
+    std::cout << "========================== DetectorCPU:: " <<  get_detector_file() << endl;
 
-    
     if( this->plate_cascade.load( get_detector_file() ) )
     {
       this->loaded = true;
@@ -49,18 +49,22 @@ namespace alpr
 
 
 
-  
+
   vector<Rect> DetectorCPU::find_plates(Mat frame, cv::Size min_plate_size, cv::Size max_plate_size)
   {
     std::cout << "========================== DetectorCPU::find_plates ==========================" << endl;
+    
+	int nthreads, tid;
+	printf("openalpr : Number of threads = %d procs = %d \n", nthreads, omp_get_num_procs());
+
     vector<Rect> plates;
-   
+
     //-- Detect plates
     timespec startTime;
     getTimeMonotonic(&startTime);
 
     equalizeHist( frame, frame );
-    
+
     plate_cascade.detectMultiScale( frame, plates, config->detection_iteration_increase, config->detectionStrictness,
                                       CV_HAAR_DO_CANNY_PRUNING,
                                       //0|CV_HAAR_SCALE_IMAGE,

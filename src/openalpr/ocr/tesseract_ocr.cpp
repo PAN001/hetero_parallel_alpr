@@ -185,7 +185,6 @@ namespace alpr
               }
             }
 
-
             #pragma omp for schedule(static) ordered
             for(int p=0; p<omp_get_num_threads(); p++) {
                 #pragma omp ordered

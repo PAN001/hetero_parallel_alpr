@@ -95,20 +95,34 @@ namespace alpr
       cout << "  -- Character Analysis Filter Time: " << diffclock(filterStartTime, filterEndTime) << "ms." << endl;
     }
 
+    timespec s, e;
+
+    getTimeMonotonic(&s);
+
     PlateMask plateMask(pipeline_data);
     plateMask.findOuterBoxMask(allTextContours);
 
+    getTimeMonotonic(&e);
+    cout << "  -- findOuterBoxMask Time : " << diffclock(s, e) << "ms." << endl;
+
+    getTimeMonotonic(&s);
     pipeline_data->hasPlateBorder = plateMask.hasPlateMask;
     pipeline_data->plateBorderMask = plateMask.getMask();
 
     if (plateMask.hasPlateMask)
     {
+      cout << "  -- thresholds size : " << pipeline_data->thresholds.size() << "ms." << endl;
       // Filter out bad contours now that we have an outer box mask...
       for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
       {
         filterByOuterMask(allTextContours[i]);
       }
     }
+
+    getTimeMonotonic(&e);
+    cout << "  -- filterByOuterMask Time : " << diffclock(s, e) << "ms." << endl;
+
+    getTimeMonotonic(&s);
 
     int bestFitScore = -1;
     int bestFitIndex = -1;
@@ -136,8 +150,12 @@ namespace alpr
       return;
     }
 
+    getTimeMonotonic(&e);
+    cout << "  --  bestFitScore Time : " << diffclock(s, e) << "ms." << endl;
+
     //getColorMask(img, allContours, allHierarchy, charSegments);
 
+    getTimeMonotonic(&s);
     if (this->config->debugCharAnalysis)
     {
       Mat img_contours = bestContours.drawDebugImage(bestThreshold);
@@ -152,15 +170,23 @@ namespace alpr
 
     if (config->debugGeneral)
       cout << "Plate inverted: " << pipeline_data->plate_inverted << endl;
-    
+
+     getTimeMonotonic(&e);
+    cout << "  --  plate_inverted Time : " << diffclock(s, e) << "ms." << endl;
+
+    getTimeMonotonic(&s);
     // Invert multiline plates and redo the thresholds before finding the second line
     if (config->multiline && config->auto_invert && pipeline_data->plate_inverted)
     {
       bitwise_not(pipeline_data->crop_gray, pipeline_data->crop_gray);
       pipeline_data->thresholds = produceThresholds(pipeline_data->crop_gray, pipeline_data->config);
     }
-      
-    
+
+
+    getTimeMonotonic(&e);
+    cout << "  --  Invert Time : " << diffclock(s, e) << "ms." << endl;
+    getTimeMonotonic(&s);
+
     LineFinder lf(pipeline_data);
     vector<vector<Point> > linePolygons = lf.findLines(pipeline_data->crop_gray, bestContours);
 
@@ -179,6 +205,10 @@ namespace alpr
       tempTextLines.push_back(textLine);
     }
 
+    getTimeMonotonic(&e);
+    cout << "  --  tempTextLines Time : " << diffclock(s, e) << "ms." << endl;
+    getTimeMonotonic(&s);
+
     filterBetweenLines(bestThreshold, bestContours, tempTextLines);
 
     // Sort the lines from top to bottom.
@@ -195,6 +225,10 @@ namespace alpr
       }
 
     }
+
+    getTimeMonotonic(&e);
+    cout << "  --  updatedTextArea Time : " << diffclock(s, e) << "ms." << endl;
+    getTimeMonotonic(&s);
 
 
     if (pipeline_data->textLines.size() > 0)
@@ -237,6 +271,9 @@ namespace alpr
         pipeline_data->disqualified = true;
         pipeline_data->disqualify_reason = "No text lines found in characteranalysis";
     }
+
+    getTimeMonotonic(&e);
+    cout << "  --  disqualify_reason Time : " << diffclock(s, e) << "ms." << endl;
 
     if (config->debugTiming)
     {
@@ -311,7 +348,7 @@ namespace alpr
     int bestFitScore = -1;
 
     vector<bool> bestIndices;
-     
+
     for (int i = 0; i < NUM_STEPS; i++)
     {
 
@@ -357,7 +394,7 @@ namespace alpr
         larger_char_width_mm = config->charWidthMM[i];
       }
     }
-    
+
     float idealAspect=larger_char_width_mm / larger_char_height_mm;
     float aspecttolerance=0.25;
 
@@ -429,7 +466,7 @@ namespace alpr
       if (textContours.goodIndices[i] == false)
         continue;
 
-      textContours.goodIndices[i] = false;  // Set it to not included unless it proves 
+      textContours.goodIndices[i] = false;  // Set it to not included unless it proves
 
       int voteIndex = -1;
       int parentID = textContours.hierarchy[i][3];
@@ -508,9 +545,9 @@ namespace alpr
       if (textContours.goodIndices[i] == false)
         continue;
 
-      float percentInsideMask = getContourAreaPercentInsideMask(outerMask, 
+      float percentInsideMask = getContourAreaPercentInsideMask(outerMask,
               textContours.contours,
-              textContours.hierarchy, 
+              textContours.hierarchy,
               (int) i);
 
 
@@ -520,7 +557,7 @@ namespace alpr
         // Not enough area is inside the lines.
         if (config->debugCharAnalysis)
           cout << "Rejecting due to insufficient area" << endl;
-        textContours.goodIndices[i] = false; 
+        textContours.goodIndices[i] = false;
 
         continue;
       }
@@ -554,7 +591,7 @@ namespace alpr
         else
         {
 
-          textContours.goodIndices[i] = false; 
+          textContours.goodIndices[i] = false;
           if (config->debugCharAnalysis)
             cout << "Rejecting due to top/bottom points that are out of range" << endl;
         }
@@ -594,7 +631,7 @@ namespace alpr
       tempFullContour = Mat::zeros(plateMask.size(), CV_8U);
       drawContours(tempFullContour, textContours.contours, i, Scalar(255,255,255), CV_FILLED, 8, textContours.hierarchy);
       bitwise_and(tempFullContour, plateMask, tempMaskedContour);
-      
+
       textContours.goodIndices[i] = false;
 
       float beforeMaskWhiteness = mean(tempFullContour)[0];
