@@ -63,6 +63,8 @@ namespace alpr
         double winarea = winx*winy;
 
         max_s = 0;
+
+        #pragma omp for schedule(static) for reduction(max:max_s)
         for(int j = y_firstth ; j<=y_lastth; j++) {   
             sum = sum_sq = 0;
 
@@ -94,6 +96,7 @@ namespace alpr
                 map_s.fset(i+wxh, j, s);
             }
         }
+
 
         timespec endTime;
         getTimeMonotonic(&endTime);

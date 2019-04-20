@@ -41,9 +41,9 @@ namespace alpr
     expandedRegion.y = expandedRegion.y - halfY;
     expandedRegion.height =  expandedRegion.height + expandYPixels;
 
-	expandedRegion.x = std::min(std::max(expandedRegion.x, 0), maxX);
-	expandedRegion.y = std::min(std::max(expandedRegion.y, 0), maxY);
-	if (expandedRegion.x + expandedRegion.width > maxX)
+  expandedRegion.x = std::min(std::max(expandedRegion.x, 0), maxX);
+  expandedRegion.y = std::min(std::max(expandedRegion.y, 0), maxY);
+  if (expandedRegion.x + expandedRegion.width > maxX)
       expandedRegion.width = maxX - expandedRegion.x;
     if (expandedRegion.y + expandedRegion.height > maxY)
       expandedRegion.height = maxY - expandedRegion.y;
