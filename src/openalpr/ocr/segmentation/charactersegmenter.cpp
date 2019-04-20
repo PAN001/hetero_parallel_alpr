@@ -732,12 +732,12 @@ namespace alpr
       boxScores[i] = 0;
 
     // #pragma omp parallel for collapse(2)
-    #pragma omp parallel for num_threads(thresholds.size())
+    // #pragma omp parallel for num_threads(thresholds.size())
     for (unsigned int i = 0; i < thresholds.size(); i++)
     {
       // TODO: Prallel makes worse
       // #pragma omp parallel for schedule(static)
-      #pragma omp parallel for num_threads(2)
+      // #pragma omp parallel for num_threads(2)
       for (unsigned int j = 0; j < charRegions.size(); j++)
       {
         //float minArea = charRegions[j].area() * MIN_AREA_PERCENT;
