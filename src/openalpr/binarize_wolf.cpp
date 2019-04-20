@@ -44,7 +44,10 @@ namespace alpr
   // create two maps: mean and standard deviation.
   // *************************************************************
 
-  double calcLocalStats (Mat &im, Mat &map_m, Mat &map_s, int winx, int winy) {    
+  double calcLocalStats (Mat &im, Mat &map_m, Mat &map_s, int winx, int winy) {
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+
       Mat im_sum, im_sum_sq;
       cv::integral(im,im_sum,im_sum_sq,CV_64F);
 
@@ -88,6 +91,10 @@ namespace alpr
                           map_s.fset(i+wxh, j, s);
                   }
           }
+
+        timespec endTime;
+        getTimeMonotonic(&endTime);
+        cout << "  --calcLocalStats Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
           return max_s;
   }
