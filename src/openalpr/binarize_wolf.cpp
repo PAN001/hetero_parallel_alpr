@@ -64,7 +64,7 @@ namespace alpr
 
         double max_s = 0;
 
-        // #pragma omp parallel for schedule(static) reduction(max:max_s)
+        #pragma omp parallel for schedule(static) reduction(max:max_s)
         for(int j = y_firstth ; j<=y_lastth; j++) {   
             double m,s,sum,sum_sq;  
             sum = sum_sq = 0;
