@@ -121,80 +121,80 @@ namespace alpr
         tesseract::ResultIterator* r2 = tesseract.GetIterator();
         do {
           riVector.push_back(*ri);
-          absolute_charpos_vector.push_back(absolute_charpos);
         } while((ri->Next(level)));
 
-        // delete ri;
+        omp_set_num_threads(2);
 
-        absolute_charpos++;
-      }
-    }
+        #pragma omp parallel
+        {
+            std::vector<OcrChar> private_recognized_chars;
+            #pragma omp for nowait schedule(static)
+            for (int p = 0; p < riVector.size(); p++) {
+              tesseract::ResultIterator r = riVector[p];
 
-    omp_set_num_threads(1);
-    #pragma omp parallel
-    {
-        std::vector<OcrChar> private_recognized_chars;
-        tesseract::PageIteratorLevel level = tesseract::RIL_SYMBOL;
+              const char* symbol = r.GetUTF8Text(level);
+              float conf = r.Confidence(level);
 
-        #pragma omp for nowait schedule(static)
-        for (int p = 0; p < riVector.size(); p++) {
-          tesseract::ResultIterator r = riVector[p];
-          int absolute_charpos = absolute_charpos_vector[p];
+              bool dontcare;
+              int fontindex = 0;
+              int pointsize = 0;
+              const char* fontName = r.WordFontAttributes(&dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &pointsize, &fontindex);
 
-          const char* symbol = r.GetUTF8Text(level);
-          float conf = r.Confidence(level);
-
-          bool dontcare;
-          int fontindex = 0;
-          int pointsize = 0;
-          const char* fontName = r.WordFontAttributes(&dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &dontcare, &pointsize, &fontindex);
-
-          // Ignore NULL pointers, spaces, and characters that are way too small to be valid
-          if(symbol != 0 && symbol[0] != SPACE_CHAR_CODE && pointsize >= config->ocrMinFontSize)
-          {
-            OcrChar c;
-            c.char_index = absolute_charpos;
-            c.confidence = conf;
-            c.letter = string(symbol);
-            private_recognized_chars.push_back(c);
-
-            // if (this->config->debugOcr)
-            //   printf("charpos%d line%d: threshold %d:  symbol %s, conf: %f font: %s (index %d) size %dpx", absolute_charpos, line_idx, i, symbol, conf, fontName, fontindex, pointsize);
-
-            bool indent = false;
-            tesseract::ChoiceIterator ci(r);
-            do
-            {
-              const char* choice = ci.GetUTF8Text();
-
-              OcrChar c2;
-              c2.char_index = absolute_charpos;
-              c2.confidence = ci.Confidence();
-              c2.letter = string(choice);
-
-              // std::cout << " -- HAISOHAN c2 char_index: " << c2.char_index << " confidence : " <<  c2.confidence << " letter : " << c2.letter << std::endl;
-
-              //1/17/2016 adt adding check to avoid double adding same character if ci is same as symbol. Otherwise first choice from ResultsIterator will get added twice when choiceIterator run.
-              if (string(symbol) != string(choice))
-                private_recognized_chars.push_back(c2);
-              else
+              // Ignore NULL pointers, spaces, and characters that are way too small to be valid
+              if(symbol != 0 && symbol[0] != SPACE_CHAR_CODE && pointsize >= config->ocrMinFontSize)
               {
-                // Explictly double-adding the first character.  This leads to higher accuracy right now, likely because other sections of code
-                // have expected it and compensated.
-                // TODO: Figure out how to remove this double-counting of the first letter without impacting accuracy
-                private_recognized_chars.push_back(c2);
-              }
-              if (this->config->debugOcr)
-              {
-                if (indent) printf("\t\t ");
-                printf("\t- ");
-                printf("%s conf: %f\n", choice, ci.Confidence());
-              }
+                OcrChar c;
+                c.char_index = absolute_charpos;
+                c.confidence = conf;
+                c.letter = string(symbol);
+                private_recognized_chars.push_back(c);
 
-              indent = true;
-            } while(ci.Next());
-          }
+                if (this->config->debugOcr)
+                  printf("charpos%d line%d: threshold %d:  symbol %s, conf: %f font: %s (index %d) size %dpx", absolute_charpos, line_idx, i, symbol, conf, fontName, fontindex, pointsize);
+
+                bool indent = false;
+                tesseract::ChoiceIterator ci(r);
+                do
+                {
+                  const char* choice = ci.GetUTF8Text();
+
+                  OcrChar c2;
+                  c2.char_index = absolute_charpos;
+                  c2.confidence = ci.Confidence();
+                  c2.letter = string(choice);
+
+                  // std::cout << " -- HAISOHAN c2 char_index: " << c2.char_index << " confidence : " <<  c2.confidence << " letter : " << c2.letter << std::endl;
+
+                  //1/17/2016 adt adding check to avoid double adding same character if ci is same as symbol. Otherwise first choice from ResultsIterator will get added twice when choiceIterator run.
+                  if (string(symbol) != string(choice))
+                    private_recognized_chars.push_back(c2);
+                  else
+                  {
+                    // Explictly double-adding the first character.  This leads to higher accuracy right now, likely because other sections of code
+                    // have expected it and compensated.
+                    // TODO: Figure out how to remove this double-counting of the first letter without impacting accuracy
+                    private_recognized_chars.push_back(c2);
+                  }
+                  if (this->config->debugOcr)
+                  {
+                    if (indent) printf("\t\t ");
+                    printf("\t- ");
+                    printf("%s conf: %f\n", choice, ci.Confidence());
+                  }
+
+                  indent = true;
+                } while(ci.Next());
+              }
+            }
+
+            #pragma omp for schedule(static) ordered
+            for(int p=0; p<omp_get_num_threads(); p++) {
+                #pragma omp ordered
+                recognized_chars.insert(recognized_chars.end(), private_recognized_chars.begin(), private_recognized_chars.end());
+            }
         }
+
+        // delete ri;
 
         #pragma omp for schedule(static) ordered
         for(int p=0; p<omp_get_num_threads(); p++) {
@@ -207,7 +207,6 @@ namespace alpr
       OcrChar c = recognized_chars[i];
       std::cout << " -- HAISOHAN " << i << " char_index: " << c.char_index << " confidence : " <<  c.confidence << " letter : " << c.letter << std::endl;
     }
-
 
     if (config->debugTiming)
     {
