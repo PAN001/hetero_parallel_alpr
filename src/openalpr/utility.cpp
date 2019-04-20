@@ -140,22 +140,23 @@ namespace alpr
     timespec s, e;
 
     getTimeMonotonic(&s);
+    int i = 0;
     // Wolf
     int k = 0, win=18;
     //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     //bitwise_not(thresholds[i-1], thresholds[i-1]);
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     getTimeMonotonic(&e);
 
     cout << "  -- NiblackSauvolaWolfJolion Time #1: " << diffclock(s, e) << "ms." << endl;
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-
+    i++;
 
     getTimeMonotonic(&s);
     k = 1;
     win = 22;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     getTimeMonotonic(&e);
 
     cout << "  -- NiblackSauvolaWolfJolion Time #2: " << diffclock(s, e) << "ms." << endl;
@@ -163,10 +164,11 @@ namespace alpr
     //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     //bitwise_not(thresholds[i-1], thresholds[i-1]);
 
+    i++;
     getTimeMonotonic(&s);
     // Sauvola
     k = 1;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i], SAUVOLA, 12, 12, 0.18 * k);
     getTimeMonotonic(&e);
 
     cout << "  -- NiblackSauvolaWolfJolion Time #3: " << diffclock(s, e) << "ms." << endl;
