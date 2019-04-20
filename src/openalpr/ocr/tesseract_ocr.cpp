@@ -106,8 +106,8 @@ namespace alpr
     // omp_set_nested(1);
     // omp_set_dynamic(0);
     // omp_set_num_threads(config->thread_cnt);
-    // #pragma omp parallel for num_threads(config->thread_cnt)
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for num_threads(pipeline_data->thresholds.size())
+    // #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
