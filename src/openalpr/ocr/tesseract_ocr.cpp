@@ -40,7 +40,7 @@ namespace alpr
 
     // parallel
     // tesseracts = (tesseract::TessBaseAPI*) malloc(sizeof(tesseract::TessBaseAPI) * config->thread_cnt);
-    for(i = 0;i < config->thread_cnt;i++) {
+    for(i = 0;i < config->threshold_cnt;i++) {
         // tesseracts[i] = TessBaseAPI();
         if (cmpVersion(tesseracts[i].Version(), MINIMUM_TESSERACT_VERSION.c_str()) < 0)
         {
@@ -82,7 +82,7 @@ namespace alpr
   TesseractOcr::~TesseractOcr()
   {
     int i;
-    for(i = 0;i < config->thread_cnt;i++) {
+    for(i = 0;i < config->threshold_cnt;i++) {
       tesseracts[i].End();
     }
 
@@ -106,7 +106,7 @@ namespace alpr
     // omp_set_nested(1);
     // omp_set_dynamic(0);
     // omp_set_num_threads(config->thread_cnt);
-    #pragma omp parallel for num_threads(pipeline_data->thresholds.size())
+    #pragma omp parallel for num_threads(config->threshold_cnt)
     // #pragma omp parallel for schedule(static)
     // #pragma omp parallel for collapse(2)
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
@@ -226,7 +226,7 @@ namespace alpr
     }
 
     // combine local recognized_chars
-    for(unsigned int i = 0;i < config->thread_cnt;i++) {
+    for(unsigned int i = 0;i < config->threshold_cnt;i++) {
       std::vector<OcrChar> cur_recognized_chars = recognized_chars_thread[i];
 
       if(!cur_recognized_chars.empty())

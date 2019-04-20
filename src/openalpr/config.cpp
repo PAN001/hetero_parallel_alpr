@@ -235,6 +235,7 @@ namespace alpr
     debugPauseOnFrame = 	getBoolean(ini, defaultIni, "", "debug_pause_on_frame",	false);
 
     thread_cnt = 8;
+    threshold_cnt = 3;
   }
   
   

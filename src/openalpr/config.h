@@ -153,6 +153,7 @@ namespace alpr
       bool setCountry(std::string country);
 
       int thread_cnt;
+      int threshold_cnt;
 
     private:
     

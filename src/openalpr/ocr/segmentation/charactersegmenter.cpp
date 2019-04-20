@@ -95,8 +95,9 @@ namespace alpr
       vector<Mat> allHistograms;
 
       vector<Rect> lineBoxes;
-      vector<Rect> lineBoxes_thread[config->thread_cnt];
-      #pragma omp parallel for schedule(static)
+      vector<Rect> lineBoxes_thread[pipeline_data->thresholds.size()];
+      // #pragma omp parallel for schedule(static)
+      #pragma omp parallel for num_threads(pipeline_data->thresholds.size())
       for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
       {
         int thread_id = omp_get_thread_num();
@@ -117,7 +118,7 @@ namespace alpr
       }
 
       // combine local lineBoxes
-      for(unsigned int i = 0;i < config->thread_cnt;i++) {
+      for(unsigned int i = 0;i < pipeline_data->thresholds.size();i++) {
         vector<Rect> cur_lineBoxes = lineBoxes_thread[i];
         if(!cur_lineBoxes.empty())
           lineBoxes.insert(lineBoxes.end(), cur_lineBoxes.begin(), cur_lineBoxes.end());
