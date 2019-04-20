@@ -106,6 +106,8 @@ ELSE()
     )
   # Opencv Package
   FIND_PACKAGE( OpenCV REQUIRED )
+  #FIND_PACKAGE( OpenCV REQUIRED PATHS /home/ubuntu/opencv/local/  NO_DEFAULT_PATH)
+message("2 - OpenCV: ${OpenCV_DIR}")
 ENDIF()
 
 IF (${OpenCV_VERSION} VERSION_LESS 2.4.7)
