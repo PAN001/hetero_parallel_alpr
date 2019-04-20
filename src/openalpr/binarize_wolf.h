@@ -20,6 +20,7 @@
 #ifndef OPENALPR_BINARIZEWOLF_H
 #define OPENALPR_BINARIZEWOLF_H
 
+#include <omp.h>
 #include "support/filesystem.h"
 #include "support/timing.h"
 #include "opencv2/opencv.hpp"
