@@ -62,11 +62,11 @@ namespace alpr
         int y_firstth= wyh;
         double winarea = winx*winy;
 
-        max_s = 0;
+        double max_s = 0;
 
         #pragma omp parallel for schedule(static) reduction(max:max_s)
         for(int j = y_firstth ; j<=y_lastth; j++) {   
-            double m,s,max_s,sum,sum_sq;  
+            double m,s,sum,sum_sq;  
             sum = sum_sq = 0;
 
             // sum of the window
