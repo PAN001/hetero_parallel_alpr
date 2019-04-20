@@ -107,6 +107,7 @@ ELSE()
     )
   message("1 - OpenCV: ${OpenCV_DIR}")
   # Opencv Package
+  #FIND_PACKAGE( OpenCV REQUIRED )
   FIND_PACKAGE( OpenCV REQUIRED PATHS /home/ubuntu/opencv/local/  NO_DEFAULT_PATH)
 message("2 - OpenCV: ${OpenCV_DIR}")
 ENDIF()
