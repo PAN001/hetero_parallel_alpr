@@ -54,7 +54,7 @@ namespace alpr
         // getTimeMonotonic(&endTime);
         // cout << "cv::integral Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
-        double m,s,max_s,sum,sum_sq;  
+        // double m,s,max_s,sum,sum_sq;  
         int wxh   = winx/2;
         int wyh   = winy/2;
         int x_firstth= wxh;
@@ -64,8 +64,9 @@ namespace alpr
 
         max_s = 0;
 
-        // #pragma omp parallel for schedule(static) reduction(max:max_s)
+        #pragma omp parallel for schedule(static) reduction(max:max_s)
         for(int j = y_firstth ; j<=y_lastth; j++) {   
+            double m,s,max_s,sum,sum_sq;  
             sum = sum_sq = 0;
 
             // sum of the window
