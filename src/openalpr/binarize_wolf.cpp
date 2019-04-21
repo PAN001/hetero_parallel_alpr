@@ -64,84 +64,84 @@ namespace alpr
 
         double max_s = 0;
 
-        // #pragma omp parallel for schedule(static) reduction(max:max_s)
-        #pragma omp parallel num_threads(2) reduction(max:max_s)
-        {  
-            int total_threads_cnt = omp_get_num_threads();
-            int thread_id = omp_get_thread_num();
-            // cout << "total_threads_cnt: " << total_threads_cnt << endl;
-            // cout << "thread_id: " << thread_id << endl;
+        // // #pragma omp parallel for schedule(static) reduction(max:max_s)
+        // #pragma omp parallel num_threads(2) reduction(max:max_s)
+        // {  
+        //     int total_threads_cnt = omp_get_num_threads();
+        //     int thread_id = omp_get_thread_num();
+        //     // cout << "total_threads_cnt: " << total_threads_cnt << endl;
+        //     // cout << "thread_id: " << thread_id << endl;
 
-            int total_cnt = y_lastth + 1 - y_firstth;
-            for(int j = y_firstth + (total_cnt / total_threads_cnt) * thread_id;j < y_firstth + (total_cnt / total_threads_cnt) * (thread_id + 1);j++) {
-            // for(int j = y_firstth ; j<=y_lastth; j++) { 
-                double m,s,sum,sum_sq;  
-                sum = sum_sq = 0;
+        //     int total_cnt = y_lastth + 1 - y_firstth;
+        //     for(int j = y_firstth + (total_cnt / total_threads_cnt) * thread_id;j < y_firstth + (total_cnt / total_threads_cnt) * (thread_id + 1);j++) {
+        //     // for(int j = y_firstth ; j<=y_lastth; j++) { 
+        //         double m,s,sum,sum_sq;  
+        //         sum = sum_sq = 0;
 
-                // sum of the window
-                sum = im_sum.at<double>(j-wyh+winy,winx) - im_sum.at<double>(j-wyh,winx) - im_sum.at<double>(j-wyh+winy,0) + im_sum.at<double>(j-wyh,0);
-                sum_sq = im_sum_sq.at<double>(j-wyh+winy,winx) - im_sum_sq.at<double>(j-wyh,winx) - im_sum_sq.at<double>(j-wyh+winy,0) + im_sum_sq.at<double>(j-wyh,0);
-
-                m  = sum / winarea;
-                s  = sqrt ((sum_sq - m*sum)/winarea);
-                if (s > max_s) max_s = s;
-
-                map_m.fset(x_firstth, j, m);
-                map_s.fset(x_firstth, j, s);
-
-                // Shift the window, add and remove   new/old values to the histogram
-                for(int i=1 ; i <= im.cols-winx; i++) {
-                    // Remove the left old column and add the right new column
-                    sum -= im_sum.at<double>(j-wyh+winy,i) - im_sum.at<double>(j-wyh,i) - im_sum.at<double>(j-wyh+winy,i-1) + im_sum.at<double>(j-wyh,i-1);
-                    sum += im_sum.at<double>(j-wyh+winy,i+winx) - im_sum.at<double>(j-wyh,i+winx) - im_sum.at<double>(j-wyh+winy,i+winx-1) + im_sum.at<double>(j-wyh,i+winx-1);
-
-                    sum_sq -= im_sum_sq.at<double>(j-wyh+winy,i) - im_sum_sq.at<double>(j-wyh,i) - im_sum_sq.at<double>(j-wyh+winy,i-1) + im_sum_sq.at<double>(j-wyh,i-1);
-                    sum_sq += im_sum_sq.at<double>(j-wyh+winy,i+winx) - im_sum_sq.at<double>(j-wyh,i+winx) - im_sum_sq.at<double>(j-wyh+winy,i+winx-1) + im_sum_sq.at<double>(j-wyh,i+winx-1);
-
-                    m  = sum / winarea;
-                    s  = sqrt ((sum_sq - m*sum)/winarea);
-                    if (s > max_s) max_s = s;
-
-                    map_m.fset(i+wxh, j, m);
-                    map_s.fset(i+wxh, j, s);
-                }
-            }
-        }
-
-        // // cout << "  --outerloop size: " << y_lastth - y_firstth << endl;
-        // // cout << "  --innerloop size: " << im.cols-winx - 1 << endl;
-        // for(int j = y_firstth ; j<=y_lastth; j++) { 
-        //     double m,s,sum,sum_sq;  
-        //     sum = sum_sq = 0;
-
-        //     // sum of the window
-        //     sum = im_sum.at<double>(j-wyh+winy,winx) - im_sum.at<double>(j-wyh,winx) - im_sum.at<double>(j-wyh+winy,0) + im_sum.at<double>(j-wyh,0);
-        //     sum_sq = im_sum_sq.at<double>(j-wyh+winy,winx) - im_sum_sq.at<double>(j-wyh,winx) - im_sum_sq.at<double>(j-wyh+winy,0) + im_sum_sq.at<double>(j-wyh,0);
-
-        //     m  = sum / winarea;
-        //     s  = sqrt ((sum_sq - m*sum)/winarea);
-        //     if (s > max_s) max_s = s;
-
-        //     map_m.fset(x_firstth, j, m);
-        //     map_s.fset(x_firstth, j, s);
-
-        //     // Shift the window, add and remove   new/old values to the histogram
-        //     for(int i=1 ; i <= im.cols-winx; i++) {
-        //         // Remove the left old column and add the right new column
-        //         sum -= im_sum.at<double>(j-wyh+winy,i) - im_sum.at<double>(j-wyh,i) - im_sum.at<double>(j-wyh+winy,i-1) + im_sum.at<double>(j-wyh,i-1);
-        //         sum += im_sum.at<double>(j-wyh+winy,i+winx) - im_sum.at<double>(j-wyh,i+winx) - im_sum.at<double>(j-wyh+winy,i+winx-1) + im_sum.at<double>(j-wyh,i+winx-1);
-
-        //         sum_sq -= im_sum_sq.at<double>(j-wyh+winy,i) - im_sum_sq.at<double>(j-wyh,i) - im_sum_sq.at<double>(j-wyh+winy,i-1) + im_sum_sq.at<double>(j-wyh,i-1);
-        //         sum_sq += im_sum_sq.at<double>(j-wyh+winy,i+winx) - im_sum_sq.at<double>(j-wyh,i+winx) - im_sum_sq.at<double>(j-wyh+winy,i+winx-1) + im_sum_sq.at<double>(j-wyh,i+winx-1);
+        //         // sum of the window
+        //         sum = im_sum.at<double>(j-wyh+winy,winx) - im_sum.at<double>(j-wyh,winx) - im_sum.at<double>(j-wyh+winy,0) + im_sum.at<double>(j-wyh,0);
+        //         sum_sq = im_sum_sq.at<double>(j-wyh+winy,winx) - im_sum_sq.at<double>(j-wyh,winx) - im_sum_sq.at<double>(j-wyh+winy,0) + im_sum_sq.at<double>(j-wyh,0);
 
         //         m  = sum / winarea;
         //         s  = sqrt ((sum_sq - m*sum)/winarea);
         //         if (s > max_s) max_s = s;
 
-        //         map_m.fset(i+wxh, j, m);
-        //         map_s.fset(i+wxh, j, s);
+        //         map_m.fset(x_firstth, j, m);
+        //         map_s.fset(x_firstth, j, s);
+
+        //         // Shift the window, add and remove   new/old values to the histogram
+        //         for(int i=1 ; i <= im.cols-winx; i++) {
+        //             // Remove the left old column and add the right new column
+        //             sum -= im_sum.at<double>(j-wyh+winy,i) - im_sum.at<double>(j-wyh,i) - im_sum.at<double>(j-wyh+winy,i-1) + im_sum.at<double>(j-wyh,i-1);
+        //             sum += im_sum.at<double>(j-wyh+winy,i+winx) - im_sum.at<double>(j-wyh,i+winx) - im_sum.at<double>(j-wyh+winy,i+winx-1) + im_sum.at<double>(j-wyh,i+winx-1);
+
+        //             sum_sq -= im_sum_sq.at<double>(j-wyh+winy,i) - im_sum_sq.at<double>(j-wyh,i) - im_sum_sq.at<double>(j-wyh+winy,i-1) + im_sum_sq.at<double>(j-wyh,i-1);
+        //             sum_sq += im_sum_sq.at<double>(j-wyh+winy,i+winx) - im_sum_sq.at<double>(j-wyh,i+winx) - im_sum_sq.at<double>(j-wyh+winy,i+winx-1) + im_sum_sq.at<double>(j-wyh,i+winx-1);
+
+        //             m  = sum / winarea;
+        //             s  = sqrt ((sum_sq - m*sum)/winarea);
+        //             if (s > max_s) max_s = s;
+
+        //             map_m.fset(i+wxh, j, m);
+        //             map_s.fset(i+wxh, j, s);
+        //         }
         //     }
         // }
+
+        // cout << "  --outerloop size: " << y_lastth - y_firstth << endl;
+        // cout << "  --innerloop size: " << im.cols-winx - 1 << endl;
+        for(int j = y_firstth ; j<=y_lastth; j++) { 
+            double m,s,sum,sum_sq;  
+            sum = sum_sq = 0;
+
+            // sum of the window
+            sum = im_sum.at<double>(j-wyh+winy,winx) - im_sum.at<double>(j-wyh,winx) - im_sum.at<double>(j-wyh+winy,0) + im_sum.at<double>(j-wyh,0);
+            sum_sq = im_sum_sq.at<double>(j-wyh+winy,winx) - im_sum_sq.at<double>(j-wyh,winx) - im_sum_sq.at<double>(j-wyh+winy,0) + im_sum_sq.at<double>(j-wyh,0);
+
+            m  = sum / winarea;
+            s  = sqrt ((sum_sq - m*sum)/winarea);
+            if (s > max_s) max_s = s;
+
+            map_m.fset(x_firstth, j, m);
+            map_s.fset(x_firstth, j, s);
+
+            // Shift the window, add and remove   new/old values to the histogram
+            for(int i=1 ; i <= im.cols-winx; i++) {
+                // Remove the left old column and add the right new column
+                sum -= im_sum.at<double>(j-wyh+winy,i) - im_sum.at<double>(j-wyh,i) - im_sum.at<double>(j-wyh+winy,i-1) + im_sum.at<double>(j-wyh,i-1);
+                sum += im_sum.at<double>(j-wyh+winy,i+winx) - im_sum.at<double>(j-wyh,i+winx) - im_sum.at<double>(j-wyh+winy,i+winx-1) + im_sum.at<double>(j-wyh,i+winx-1);
+
+                sum_sq -= im_sum_sq.at<double>(j-wyh+winy,i) - im_sum_sq.at<double>(j-wyh,i) - im_sum_sq.at<double>(j-wyh+winy,i-1) + im_sum_sq.at<double>(j-wyh,i-1);
+                sum_sq += im_sum_sq.at<double>(j-wyh+winy,i+winx) - im_sum_sq.at<double>(j-wyh,i+winx) - im_sum_sq.at<double>(j-wyh+winy,i+winx-1) + im_sum_sq.at<double>(j-wyh,i+winx-1);
+
+                m  = sum / winarea;
+                s  = sqrt ((sum_sq - m*sum)/winarea);
+                if (s > max_s) max_s = s;
+
+                map_m.fset(i+wxh, j, m);
+                map_s.fset(i+wxh, j, s);
+            }
+        }
 
 
         timespec endTime;
