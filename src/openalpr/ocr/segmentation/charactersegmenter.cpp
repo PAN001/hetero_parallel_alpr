@@ -731,7 +731,7 @@ namespace alpr
     for (unsigned int i = 0; i < charRegions.size(); i++)
       boxScores[i] = 0;
 
-    // #pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2)
     // #pragma omp parallel for num_threads(thresholds.size())
     for (unsigned int i = 0; i < thresholds.size(); i++)
     {
