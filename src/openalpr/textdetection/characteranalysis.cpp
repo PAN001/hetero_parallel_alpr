@@ -48,14 +48,14 @@ namespace alpr
 
   void CharacterAnalysis::analyze()
   {
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-
     if (config->always_invert)
       bitwise_not(pipeline_data->crop_gray, pipeline_data->crop_gray);
 
     pipeline_data->clearThresholds();
     pipeline_data->thresholds = produceThresholds(pipeline_data->crop_gray, config);
+
+    timespec startTime;
+    getTimeMonotonic(&startTime);
 
     timespec contoursStartTime;
     getTimeMonotonic(&contoursStartTime);
