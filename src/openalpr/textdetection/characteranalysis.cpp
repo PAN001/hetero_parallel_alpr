@@ -104,6 +104,7 @@ namespace alpr
     if (plateMask.hasPlateMask)
     {
       // Filter out bad contours now that we have an outer box mask...
+      #pragma omp parallel for num_threads(pipeline_data->thresholds.size())
       for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
       {
         filterByOuterMask(allTextContours[i]);
