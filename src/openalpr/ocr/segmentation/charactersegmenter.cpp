@@ -191,6 +191,9 @@ namespace alpr
         displayImage(config, "Segmentation Clean Filters", cleanImgDash);
       }
     }
+
+    timespec applyEdgeMaskStartTime;
+    getTimeMonotonic(&applyEdgeMaskStartTime);
     
     // Apply the edge mask (left and right ends) after all lines have been processed.
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
@@ -204,6 +207,11 @@ namespace alpr
       for (unsigned int boxidx = 0; boxidx < pipeline_data->charRegions[lidx].size(); boxidx++)
         all_regions_combined.push_back(pipeline_data->charRegions[lidx][boxidx]);
     }
+
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    cout << "  -- Apply the edge mask Time: " << diffclock(applyEdgeMaskStartTime, endTime) << "ms." << endl;
+
     cleanCharRegions(pipeline_data->thresholds, all_regions_combined);
 
     if (config->debugTiming)
@@ -989,7 +997,7 @@ namespace alpr
     timespec endTime;
     getTimeMonotonic(&endTime);
     std::cout << "  -- filterEdgeBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
-    
+
     return empty_mask;
   }
 
