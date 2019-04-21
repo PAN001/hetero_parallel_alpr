@@ -395,6 +395,10 @@ namespace alpr
 
   void CharacterSegmenter::removeSmallContours(vector<Mat> thresholds, float avgCharHeight,  TextLine textLine)
   {
+    std::cout << "========================== CharacterSegmenter::removeSmallContours ==========================" << std::endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+
     //const float MIN_CHAR_AREA = 0.02 * avgCharWidth * avgCharHeight;	// To clear out the tiny specks
     const float MIN_CONTOUR_HEIGHT = config->segmentationMinSpeckleHeightPercent * avgCharHeight;
 
@@ -424,7 +428,12 @@ namespace alpr
         }
       }
     }
+
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- removeSmallContours Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
   }
+
   int CharacterSegmenter::getCharGap(cv::Rect leftBox, cv::Rect rightBox) {
       int right_midpoint = (rightBox.x + (rightBox.width / 2));
       int left_midpoint = (leftBox.x + (leftBox.width / 2));
@@ -433,6 +442,10 @@ namespace alpr
 
   vector<Rect> CharacterSegmenter::combineCloseBoxes( vector<Rect> charBoxes)
   {
+    std::cout << "========================== CharacterSegmenter::combineCloseBoxes ==========================" << std::endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+
     // Don't bother combining if there are fewer than the min number of characters
     if (charBoxes.size() < config->postProcessMinCharacters)
       return charBoxes;
@@ -522,11 +535,19 @@ namespace alpr
       }
     }
 
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- combineCloseBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
+
     return newCharBoxes;
   }
 
   void CharacterSegmenter::cleanCharRegions(vector<Mat> thresholds, vector<Rect> charRegions)
   {
+    std::cout << "========================== CharacterSegmenter::cleanCharRegions ==========================" << std::endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+
     const float MIN_SPECKLE_HEIGHT_PERCENT = 0.13;
     const float MIN_SPECKLE_WIDTH_PX = 3;
     const float MIN_CONTOUR_AREA_PERCENT = 0.1;
@@ -637,6 +658,10 @@ namespace alpr
         line(thresholds[i], Point(charRegions[j].x + charRegions[j].width + 1, charRegions[j].y), Point(charRegions[j].x + charRegions[j].width + 1, charRegions[j].y + charRegions[j].height), Scalar(0, 0, 0));
       }
     }
+
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- cleanCharRegions Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
   }
 
   void CharacterSegmenter::cleanBasedOnColor(vector<Mat> thresholds, Mat colorMask, vector<Rect> charRegions)
@@ -796,6 +821,10 @@ namespace alpr
 
   Mat CharacterSegmenter::filterEdgeBoxes(vector<Mat> thresholds, const vector<Rect> charRegions, float avgCharWidth, float avgCharHeight)
   {
+    std::cout << "========================== CharacterSegmenter::filterEdgeBoxes ==========================" << std::endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
+
     const float MIN_ANGLE_FOR_ROTATION = 0.4;
     int MIN_CONNECTED_EDGE_PIXELS = (avgCharHeight * 1.5);
 
@@ -957,6 +986,10 @@ namespace alpr
       return mask;
     }
 
+    timespec endTime;
+    getTimeMonotonic(&endTime);
+    std::cout << "  -- filterEdgeBoxes Time: " << diffclock(startTime, endTime) << "ms." << std::endl;
+    
     return empty_mask;
   }
 
