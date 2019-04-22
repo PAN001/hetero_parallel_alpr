@@ -185,7 +185,7 @@ namespace alpr
     }
     
     // Apply the edge mask (left and right ends) after all lines have been processed.
-    #pragma omp parallel for num_threads(pipeline_data->thresholds.size())
+    // #pragma omp parallel for num_threads(pipeline_data->thresholds.size())
     for (unsigned int i = 0; i < pipeline_data->thresholds.size(); i++)
     {
       bitwise_and(pipeline_data->thresholds[i], edge_filter_mask, pipeline_data->thresholds[i]);
