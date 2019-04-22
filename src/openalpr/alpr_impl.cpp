@@ -49,7 +49,7 @@ namespace alpr
     
     loadRecognizers();
 
-    setNumThreads(0); // opencv
+    setNumThreads(config->thread_cnt); // opencv
     //omp_set_num_threads(config->thread_cnt);
     omp_set_nested(1);
     omp_set_dynamic(0);
