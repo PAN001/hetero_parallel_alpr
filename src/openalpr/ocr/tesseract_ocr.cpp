@@ -167,7 +167,7 @@ namespace alpr
 
             // TODO: vector push_back is not thread safe
             // recognized_chars.push_back(c);
-            recognized_chars_thread[thread_id].push_back(c);
+            tesseract.push_back(c);
             
 
             if (this->config->debugOcr)
@@ -187,7 +187,7 @@ namespace alpr
               //1/17/2016 adt adding check to avoid double adding same character if ci is same as symbol. Otherwise first choice from ResultsIterator will get added twice when choiceIterator run.
               if (string(symbol) != string(choice)) {
                 // recognized_chars.push_back(c2);
-                recognized_chars_thread[thread_id].push_back(c);
+                tesseract.push_back(c2);
               }
               else
               {
@@ -195,7 +195,7 @@ namespace alpr
                 // have expected it and compensated. 
                 // TODO: Figure out how to remove this double-counting of the first letter without impacting accuracy
                 // recognized_chars.push_back(c2);
-                recognized_chars_thread[thread_id].push_back(c);
+                tesseract.push_back(c2);
               }
               if (this->config->debugOcr)
               {
