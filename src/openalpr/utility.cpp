@@ -127,7 +127,7 @@ namespace alpr
 
     char* outputname = "plate.jpg"
     cout << "Writing binarized image to file '" << outputname << "'.\n";
-    imwrite(img_gray, output);
+    imwrite(outputname, img_gray);
 
     timespec startTime;
     getTimeMonotonic(&startTime);
