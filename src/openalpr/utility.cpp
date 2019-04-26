@@ -125,7 +125,7 @@ namespace alpr
     const int THRESHOLD_COUNT = 3;
     //Mat img_equalized = equalizeBrightness(img_gray);
 
-    char* outputname = "plate.jpg"
+    char* outputname = "plate.jpg";
     cout << "Writing binarized image to file '" << outputname << "'.\n";
     imwrite(outputname, img_gray);
 
