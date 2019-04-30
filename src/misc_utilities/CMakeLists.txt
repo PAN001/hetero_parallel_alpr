@@ -17,19 +17,19 @@ TARGET_LINK_LIBRARIES(openalpr-utils-classifychars
   )
   
 if (NOT DEFINED WIN32)
-ADD_EXECUTABLE(openalpr-utils-benchmark
-		benchmarks/benchmark.cpp 
-		benchmarks/benchmark_utils.cpp 
-		benchmarks/endtoendtest.cpp 
-)
-TARGET_LINK_LIBRARIES(openalpr-utils-benchmark
-    ${OPENALPR_LIB}
-    ${STATE_DETECTION_LIB}
-    support
-    pthread
-    ${OpenCV_LIBS} 
-	${Tesseract_LIBRARIES}
-  )
+#ADD_EXECUTABLE(openalpr-utils-benchmark
+#		benchmarks/benchmark.cpp 
+#		benchmarks/benchmark_utils.cpp 
+#		benchmarks/endtoendtest.cpp 
+#)
+#TARGET_LINK_LIBRARIES(openalpr-utils-benchmark
+ #   ${OPENALPR_LIB}
+  #  ${STATE_DETECTION_LIB}
+   # support
+#    pthread
+#    ${OpenCV_LIBS} 
+#	${Tesseract_LIBRARIES}
+#  )
 ENDIF()
   
 ADD_EXECUTABLE( openalpr-utils-prepcharsfortraining prepcharsfortraining.cpp )
@@ -67,7 +67,7 @@ install (TARGETS openalpr-utils-calibrate DESTINATION bin)
 install (TARGETS openalpr-utils-classifychars DESTINATION bin)
 
 if (NOT DEFINED WIN32)
-install (TARGETS openalpr-utils-benchmark DESTINATION bin)
+#install (TARGETS openalpr-utils-benchmark DESTINATION bin)
 ENDIF()
 
 install (TARGETS openalpr-utils-prepcharsfortraining DESTINATION bin)
