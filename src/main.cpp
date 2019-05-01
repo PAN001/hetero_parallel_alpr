@@ -124,6 +124,7 @@ int main( int argc, const char** argv )
   cv::Mat frame;
 
   // CUDA context creation
+  std::cout << "CUDA context creation" << std::endl;
   triggerCudaCreation();
 
   Alpr alpr(country, configFile);
