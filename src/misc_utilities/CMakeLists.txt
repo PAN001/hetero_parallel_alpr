@@ -1,5 +1,6 @@
+CUDA_COMPILE(CU_O ../openalpr/binarize_sauvola.cu)
 
-ADD_EXECUTABLE( openalpr-utils-sortstate sortstate.cpp  )
+ADD_EXECUTABLE( openalpr-utils-sortstate sortstate.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-sortstate
     ${OPENALPR_LIB}
 	${STATE_DETECTION_LIB}
@@ -8,7 +9,8 @@ TARGET_LINK_LIBRARIES(openalpr-utils-sortstate
 	${Tesseract_LIBRARIES}
   )
   
-ADD_EXECUTABLE( openalpr-utils-classifychars classifychars.cpp )
+
+ADD_EXECUTABLE( openalpr-utils-classifychars classifychars.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-classifychars
     ${OPENALPR_LIB}
     support
@@ -32,13 +34,12 @@ if (NOT DEFINED WIN32)
 #  )
 ENDIF()
 
-ADD_EXECUTABLE( openalpr-utils-prepcharsfortraining prepcharsfortraining.cpp )
+ADD_EXECUTABLE( openalpr-utils-prepcharsfortraining prepcharsfortraining.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-prepcharsfortraining
     support
     ${OpenCV_LIBS} 
   )
  
-CUDA_COMPILE(CU_O ../openalpr/binarize_sauvola.cu)
 ADD_EXECUTABLE( openalpr-utils-binarizefontsheet binarizefontsheet.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-binarizefontsheet
     ${OPENALPR_LIB}
@@ -46,7 +47,7 @@ TARGET_LINK_LIBRARIES(openalpr-utils-binarizefontsheet
     ${OpenCV_LIBS} 
   ) 
   
-ADD_EXECUTABLE( openalpr-utils-tagplates tagplates.cpp )
+ADD_EXECUTABLE( openalpr-utils-tagplates tagplates.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-tagplates
     ${OPENALPR_LIB}
     support
