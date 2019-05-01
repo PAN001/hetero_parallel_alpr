@@ -140,8 +140,12 @@ ENDIF()
 
 add_compile_options(-std=c++11)
 set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall ")
+
+# Compile CUDA
+CUDA_COMPILE(CU_O openalpr/binarize_sauvola.cu)
+
 if (NOT IOS)
-  ADD_EXECUTABLE( alpr  main.cpp )
+  ADD_EXECUTABLE( alpr  main.cpp ${CU_O})
 ENDIF()
 
 if (WIN32) 
