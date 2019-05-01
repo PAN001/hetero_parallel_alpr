@@ -53,7 +53,7 @@ TARGET_LINK_LIBRARIES(openalpr-utils-tagplates
     ${OpenCV_LIBS} 
   )
   
-ADD_EXECUTABLE( openalpr-utils-calibrate calibrate.cpp  )
+ADD_EXECUTABLE( openalpr-utils-calibrate calibrate.cpp  ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-calibrate
     ${OPENALPR_LIB}
     support
