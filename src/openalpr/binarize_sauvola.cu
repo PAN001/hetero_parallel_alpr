@@ -377,6 +377,7 @@ void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int wi
     // SAFE_CALL(cudaMalloc<float>(&d_map_m,mapBytes),"CUDA Malloc Failed");
     // SAFE_CALL(cudaMalloc<float>(&d_map_s,mapBytes),"CUDA Malloc Failed");
 
+    timespec endTime;
     getTimeMonotonic(&endTime);
     cout << "  --cudaMalloc Time: " << diffclock(cudaMallocStartTime, endTime) << "ms." << endl;
 
@@ -421,7 +422,6 @@ void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int wi
     //Copy back data from destination device meory to OpenCV output image
     SAFE_CALL(cudaMemcpy(output.ptr(),d_output,outputBytes,cudaMemcpyDeviceToHost),"CUDA Memcpy Host To Device Failed");
 
-    timespec endTime;
     getTimeMonotonic(&endTime);
     cout << "  --cuda kernel running Time: " << diffclock(cudaKernelStartTime, endTime) << "ms." << endl;
 
