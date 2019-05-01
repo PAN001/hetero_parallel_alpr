@@ -150,7 +150,7 @@ namespace alpr
     // bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     // Sauvola
-    k = 1;
+    int k = 1;
     NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
