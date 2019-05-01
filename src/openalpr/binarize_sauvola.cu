@@ -23,7 +23,17 @@
 using namespace std;
 using namespace cv;
 
+#define BINARIZEWOLF_DEFAULTDR  128
+
 timespec diff(timespec start, timespec end);
+
+double diffclock(timespec time1,timespec time2)
+{
+  timespec delta = diff(time1,time2);
+  double milliseconds = (((double) delta.tv_sec) * 1000.0) +  (((double) delta.tv_nsec) / 1000000.0);
+
+  return milliseconds;
+}
 
 void _getTime(bool realtime, timespec* time)
 {
@@ -62,13 +72,7 @@ int64_t getTimeMonotonicMs()
   return diffclock(time_start, time);
 }
 
-double diffclock(timespec time1,timespec time2)
-{
-  timespec delta = diff(time1,time2);
-  double milliseconds = (((double) delta.tv_sec) * 1000.0) +  (((double) delta.tv_nsec) / 1000000.0);
 
-  return milliseconds;
-}
 
 timespec diff(timespec start, timespec end)
 {
