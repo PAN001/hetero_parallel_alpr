@@ -4,7 +4,7 @@ set(CMAKE_BUILD_TYPE RelWithDebugInfo)
 #set(CMAKE_BUILD_TYPE Debug)
 
 cmake_minimum_required (VERSION 2.6)
-
+SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/share/OpenCV")
 # Set the OpenALPR version in cmake, and also add it as a DEFINE for the code to access
 SET(OPENALPR_MAJOR_VERSION "2")
 SET(OPENALPR_MINOR_VERSION "3")
@@ -77,7 +77,9 @@ IF(Tesseract_FRAMEWORK_PATH AND Leptonica_FRAMEWORK_PATH)
   SET(Tesseract_LIBRARIES "${Tesseract_FRAMEWORK_PATH};${Leptonica_FRAMEWORK_PATH}")
   SET(Tesseract_INCLUDE_DIRS "${Tesseract_FRAMEWORK_PATH}/Headers")
 ELSE()
-  FIND_PACKAGE( Tesseract REQUIRED )
+  SET(Tesseract_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so")
+  SET(Tesseract_INCLUDE_DIRS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/include/tesseract")
+  #FIND_PACKAGE( Tesseract REQUIRED )
 ENDIF()
 
 include_directories(${Tesseract_INCLUDE_DIRS})
@@ -136,7 +138,7 @@ ELSE()
 
 ENDIF()
 
-
+add_compile_options(-std=c++11)
 set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall ")
 if (NOT IOS)
   ADD_EXECUTABLE( alpr  main.cpp )
@@ -179,8 +181,9 @@ IF (WITH_DAEMON)
 )
 
   FIND_PACKAGE( CURL REQUIRED )
-  FIND_PACKAGE( log4cplus REQUIRED )
-
+  #FIND_PACKAGE( log4cplus REQUIRED )
+  SET(log4cplus_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblog4cplus.so")
+  SET(log4cplus_INCLUDE_DIRS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/include/log4cplus")
   TARGET_LINK_LIBRARIES(alprd
       ${OPENALPR_LIB}
 	  support
