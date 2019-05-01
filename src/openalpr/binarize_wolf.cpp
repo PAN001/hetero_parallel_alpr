@@ -105,7 +105,8 @@ namespace alpr
 
 void NiblackSauvolaWolfJolion (Mat im, Mat output, NiblackVersion version,
 	int winx, int winy, double k, double dR) {
-
+  timespec startTime;
+  getTimeMonotonic(&startTime);
 	
 	double m, s, max_s;
 	double th=0;
@@ -208,16 +209,20 @@ void NiblackSauvolaWolfJolion (Mat im, Mat output, NiblackVersion version,
 	
 	
 	for	(int y=0; y<im.rows; ++y) 
-	for	(int x=0; x<im.cols; ++x) 
-	{
-    	if (im.uget(x,y) >= thsurf.fget(x,y))
-    	{
-    		output.uset(x,y,255);
-    	}
-    	else
-    	{
-    	    output.uset(x,y,0);
-    	}
+  	for	(int x=0; x<im.cols; ++x) 
+  	{
+      	if (im.uget(x,y) >= thsurf.fget(x,y))
+      	{
+      		output.uset(x,y,255);
+      	}
+      	else
+      	{
+      	    output.uset(x,y,0);
+      	}
     }
+
+  timespec endTime;
+  getTimeMonotonic(&endTime);
+  cout << "  -- NiblackSauvolaWolfJolion Time: " << diffclock(startTime, endTime) << "ms." << endl;
   }
 }
