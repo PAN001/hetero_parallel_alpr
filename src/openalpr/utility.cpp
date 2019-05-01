@@ -177,7 +177,13 @@ namespace alpr
 
     for (int i = 0; i < THRESHOLD_COUNT; i++) {
       cout << "Showing threshold: " << i << endl;
-      displayImage(config, "Binarization  Thresholds", thresholds[i]);
+      std::string outputname;
+      std::stringstream ss;
+      ss << i << "_threshold.jpg";
+      outputname = ss.str();
+      imwrite(outputname, thresholds[i]);
+      // displayImage(config, "Binarization  Thresholds", thresholds[i]);
+
     }
 
     return thresholds;
