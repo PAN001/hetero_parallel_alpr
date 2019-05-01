@@ -183,7 +183,7 @@ namespace alpr
       // outputname = ss.str();
       // imwrite(outputname, thresholds[i]);
 
-      displayImage(config, "Binarization  Thresholds", thresholds[i]);
+      // displayImage(config, "Binarization  Thresholds", thresholds[i]);
     }
 
     return thresholds;
