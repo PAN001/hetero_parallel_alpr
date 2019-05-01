@@ -19,7 +19,7 @@
 // #include <cv>
 // #include <highgui>
 #include <opencv2/opencv.hpp>
-#include "timing.h"
+#include "support/timing.h"
 
 using namespace std;
 using namespace cv;
@@ -247,7 +247,7 @@ __global__ void NiblackSauvolaWolfJolionCuda(unsigned char* input, unsigned char
     }
 }
 
-void NiblackSauvolaWolfJolionWrapper(Mat input, Mat output, int winx, int winy, double k) {
+void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int winy, double k) {
     timespec contextStartTime;
     getTimeMonotonic(&contextStartTime);
 
