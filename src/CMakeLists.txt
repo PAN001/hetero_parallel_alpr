@@ -142,6 +142,26 @@ add_compile_options(-std=c++11)
 set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall ")
 
 # Compile CUDA
+find_package(CUDA REQUIRED)
+if(NOT HAVE_CUDA)
+  set(ENABLE_DYNAMIC_CUDA OFF)
+endif()
+
+message("CUDA: ${CUDA_DIR}")
+message(STATUS "CUDA library status:")
+message(STATUS "    version: ${CUDA_VERSION}")
+message(STATUS "    libraries: ${CUDA_CUDA_LIBRARY}")
+message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
+
+if(HAVE_CUDA AND NOT ENABLE_DYNAMIC_CUDA)
+  set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
+  if(HAVE_CUBLAS)
+    set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_cublas_LIBRARY})
+  endif()
+  if(HAVE_CUFFT)
+    set(OPENCV_LINKER_LIBS ${OPENCV_LINKER_LIBS} ${CUDA_cufft_LIBRARY})
+  endif()
+endif()
 CUDA_COMPILE(CU_O openalpr/binarize_sauvola.cu)
 
 if (NOT IOS)
