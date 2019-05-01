@@ -53,6 +53,8 @@ namespace alpr
   vector<Rect> DetectorCPU::find_plates(Mat frame, cv::Size min_plate_size, cv::Size max_plate_size)
   {
 
+    imwrite("frame.jpg", frame);
+    
     vector<Rect> plates;
    
     //-- Detect plates
