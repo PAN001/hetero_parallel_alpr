@@ -115,7 +115,7 @@ namespace alpr
     if (config->debugShowImages)
     {
       imshow(windowName, frame);
-      cv::waitKey(5);
+      cv::waitKey();
     }
   }
 
@@ -166,6 +166,11 @@ namespace alpr
       timespec endTime;
       getTimeMonotonic(&endTime);
       cout << "  -- Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+    }
+
+
+    for (int i = 0; i < THRESHOLD_COUNT; i++) {
+      displayImage(config, "Binarization  Thresholds", thresholds[i]);
     }
 
     return thresholds;
