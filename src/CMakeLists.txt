@@ -202,6 +202,7 @@ IF (WITH_DAEMON)
     daemon/daemonconfig.cpp 
     daemon/beanstalk.c 
     daemon/beanstalk.cc 
+    ${CU_O}
 )
 
   FIND_PACKAGE( CURL REQUIRED )
