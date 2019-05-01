@@ -31,14 +31,15 @@ if (NOT DEFINED WIN32)
 #	${Tesseract_LIBRARIES}
 #  )
 ENDIF()
-  
+
 ADD_EXECUTABLE( openalpr-utils-prepcharsfortraining prepcharsfortraining.cpp )
 TARGET_LINK_LIBRARIES(openalpr-utils-prepcharsfortraining
     support
     ${OpenCV_LIBS} 
   )
  
-ADD_EXECUTABLE( openalpr-utils-binarizefontsheet binarizefontsheet.cpp )
+CUDA_COMPILE(CU_O ../openalpr/binarize_sauvola.cu)
+ADD_EXECUTABLE( openalpr-utils-binarizefontsheet binarizefontsheet.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-binarizefontsheet
     ${OPENALPR_LIB}
     support
