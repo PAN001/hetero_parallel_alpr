@@ -26,6 +26,8 @@
 using namespace cv;
 using namespace std;
 
+void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int winy, double k);
+
 namespace alpr
 {
 
@@ -151,15 +153,18 @@ namespace alpr
 
     // Sauvola
     int k = 1;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     k = 1;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     k = 0;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     if (config->debugTiming)
