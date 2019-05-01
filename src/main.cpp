@@ -44,6 +44,8 @@ const std::string WEBCAM_PREFIX = "/dev/video";
 MotionDetector motiondetector;
 bool do_motiondetection = true;
 
+void triggerCudaCreation();
+
 /** Function Headers */
 bool detectandshow(Alpr* alpr, cv::Mat frame, std::string region, bool writeJson);
 bool is_supported_image(std::string image_file);
@@ -120,6 +122,9 @@ int main( int argc, const char** argv )
 
   
   cv::Mat frame;
+
+  // CUDA context creation
+  triggerCudaCreation();
 
   Alpr alpr(country, configFile);
   alpr.setTopN(topn);

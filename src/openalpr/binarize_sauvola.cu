@@ -319,14 +319,14 @@ __global__ void NiblackSauvolaWolfJolionCuda(unsigned char* input, unsigned char
 }
 
 void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int winy, double k) {
-    timespec contextStartTime;
-    getTimeMonotonic(&contextStartTime);
+    // timespec contextStartTime;
+    // getTimeMonotonic(&contextStartTime);
 
-    cudaFree(0); // manually trigger creation of the context
+    // cudaFree(0); // manually trigger creation of the context
 
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    cout << "  --context creation Time: " << diffclock(contextStartTime, endTime) << "ms." << endl;
+    // timespec endTime;
+    // getTimeMonotonic(&endTime);
+    // cout << "  --context creation Time: " << diffclock(contextStartTime, endTime) << "ms." << endl;
 
     timespec startTime;
     getTimeMonotonic(&startTime);
