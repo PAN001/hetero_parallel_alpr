@@ -153,18 +153,18 @@ namespace alpr
 
     // Sauvola
     int k = 1;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+    // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     k = 1;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+    // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     k = 0;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+    // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     if (config->debugTiming)
@@ -176,14 +176,14 @@ namespace alpr
 
 
     for (int i = 0; i < THRESHOLD_COUNT; i++) {
-      cout << "Showing threshold: " << i << endl;
-      std::string outputname;
-      std::stringstream ss;
-      ss << i << "_threshold.jpg";
-      outputname = ss.str();
-      imwrite(outputname, thresholds[i]);
-      // displayImage(config, "Binarization  Thresholds", thresholds[i]);
+      // cout << "Showing threshold: " << i << endl;
+      // std::string outputname;
+      // std::stringstream ss;
+      // ss << i << "_threshold.jpg";
+      // outputname = ss.str();
+      // imwrite(outputname, thresholds[i]);
 
+      displayImage(config, "Binarization  Thresholds", thresholds[i]);
     }
 
     return thresholds;
