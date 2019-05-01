@@ -166,7 +166,7 @@ endif()
 CUDA_COMPILE(CU_O openalpr/binarize_sauvola.cu)
 CUDA_COMPILE(CU_1 create_cuda.cu)
 if (NOT IOS)
-  ADD_EXECUTABLE( alpr  main.cpp ${CU_O} $(CU_1))
+  ADD_EXECUTABLE( alpr  main.cpp ${CU_O} ${CU_1})
 ENDIF()
 
 if (WIN32) 
