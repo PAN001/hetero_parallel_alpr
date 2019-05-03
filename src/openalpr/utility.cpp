@@ -127,6 +127,9 @@ namespace alpr
     const int THRESHOLD_COUNT = 3;
     //Mat img_equalized = equalizeBrightness(img_gray);
 
+    cout << "rows: " << img_gray.size().height << endl;
+    cout << "cols: " << img_gray.size().width << endl;
+
     timespec startTime;
     getTimeMonotonic(&startTime);
 
@@ -160,12 +163,12 @@ namespace alpr
 
     k = 1;
     // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     k = 0;
     // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     if (config->debugTiming)
