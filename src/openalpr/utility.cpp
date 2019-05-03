@@ -123,14 +123,13 @@ namespace alpr
 
   vector<Mat> produceThresholds(Mat img_gray, Config* config)
   {
-    cout << "original img_gray = "<< endl << " "  << img_gray << endl << endl;
+    // cout << "original img_gray = "<< endl << " "  << img_gray << endl << endl;
     char* name = "produceThresholds_input.jpg";
     imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
-    //Mat img_equalized = equalizeBrightness(img_gray);
-    // cvtColor(img_gray, img_gray, CV_BGR2GRAY);
-    img_gray= imread(name);
-    cout << "recovered img_gray = "<< endl << " "  << img_gray << endl << endl;
+    resize(img_gray, img_gray, img_gray.size())
+    // img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
+    // cout << "recovered img_gray = "<< endl << " "  << img_gray << endl << endl;
     cout << "rows: " << img_gray.size().height << endl;
     cout << "cols: " << img_gray.size().width << endl;
 
