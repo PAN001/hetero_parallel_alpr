@@ -51,7 +51,7 @@ namespace alpr
 
     pipeline_data->crop_gray = Mat(this->pipeline_data->grayImg, expandedRegion);
     // imwrite("before_resize.jpg", pipeline_data->crop_gray);
-    resize(pipeline_data->crop_gray, pipeline_data->crop_gray, Size(config->templateWidthPx, config->templateHeightPx));
+    // resize(pipeline_data->crop_gray, pipeline_data->crop_gray, Size(config->templateWidthPx, config->templateHeightPx));
     // imwrite("after_resize.jpg", pipeline_data->crop_gray);
 
     CharacterAnalysis textAnalysis(pipeline_data);
