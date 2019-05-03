@@ -121,7 +121,7 @@ namespace alpr
     }
   }
 
-  vector<Mat> produceThresholds(const Mat img_gray, Config* config)
+  vector<Mat> produceThresholds(Mat img_gray, Config* config)
   {
     char* name = "produceThresholds_input.jpg";
     imwrite(name, img_gray);
