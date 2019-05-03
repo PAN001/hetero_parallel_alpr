@@ -128,7 +128,7 @@ namespace alpr
     const int THRESHOLD_COUNT = 3;
     //Mat img_equalized = equalizeBrightness(img_gray);
 
-    Mat img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
+    img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
     cout << "rows: " << img_gray.size().height << endl;
     cout << "cols: " << img_gray.size().width << endl;
 
