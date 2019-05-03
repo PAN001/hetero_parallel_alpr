@@ -331,51 +331,19 @@ void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int wi
     timespec startTime;
     getTimeMonotonic(&startTime);
 
-    // Mat im_sum, im_sum_sq;
-    // integral(input, im_sum, im_sum_sq, CV_64F);
-
-    // timespec integralEndTime;
-    // getTimeMonotonic(&integralEndTime);
-    // cout << "  --cv::integral Time: " << diffclock(startTime, integralEndTime) << "ms." << endl;
-
-
-    // timespec minMaxLocStartTime;
-    // getTimeMonotonic(&minMaxLocStartTime);
-    // double min_I, max_I;
-    // minMaxLoc(input, &min_I, &max_I);
-    // timespec minMaxLocEndTime;
-    // getTimeMonotonic(&minMaxLocEndTime);
-    // cout << "  --cv::minMaxLoc Time: " << diffclock(minMaxLocStartTime, minMaxLocEndTime) << "ms." << endl;
-
-
-    // // Create local statistics and store them in a double matrices
-    // Mat map_m = Mat::zeros(input.rows, input.cols, CV_32F); // mean of the gray values in the window
-    // Mat map_s = Mat::zeros(input.rows, input.cols, CV_32F); // variance of the gray values in the window
-    // double max_s = calcLocalStats(input, im_sum, im_sum_sq, map_m, map_s, winx, winy);
-
-    // cout << "input.rows: " << input.rows << endl;
-    // cout << "input.step: " << input.step << endl;
 
     //Calculate total number of bytes of input and output image
     const int inputBytes = input.step * input.rows;
     const int outputBytes = output.step * output.rows;
-    // const int sumBytes = im_sum.cols * im_sum.rows;
-    // const int sumSqBytes = im_sum_sq.cols * im_sum_sq.rows;
-    // const int mapBytes = map_m.step * map_m.rows;
 
     unsigned char *d_input, *d_output;
-    // float *d_sum, *d_sum_sq;
-    // float *d_map_m, *d_map_s;
 
     timespec cudaMallocStartTime;
     getTimeMonotonic(&cudaMallocStartTime);
+
     //Allocate device memory
     SAFE_CALL(cudaMalloc<unsigned char>(&d_input,inputBytes),"CUDA Malloc Failed");
     SAFE_CALL(cudaMalloc<unsigned char>(&d_output,outputBytes),"CUDA Malloc Failed");
-    // SAFE_CALL(cudaMalloc<unsigned char>(&d_sum,sumBytes),"CUDA Malloc Failed");
-    // SAFE_CALL(cudaMalloc<unsigned char>(&d_sum_sq,sumSqBytes),"CUDA Malloc Failed");
-    // SAFE_CALL(cudaMalloc<float>(&d_map_m,mapBytes),"CUDA Malloc Failed");
-    // SAFE_CALL(cudaMalloc<float>(&d_map_s,mapBytes),"CUDA Malloc Failed");
 
     timespec endTime;
     getTimeMonotonic(&endTime);
@@ -383,12 +351,9 @@ void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int wi
 
     timespec cudaMemcpyStartTime;
     getTimeMonotonic(&cudaMemcpyStartTime);
+
     //Copy data from OpenCV input image to device memory
     SAFE_CALL(cudaMemcpy(d_input,input.ptr(),inputBytes,cudaMemcpyHostToDevice),"CUDA Memcpy Host To Device Failed");
-    // SAFE_CALL(cudaMemcpy(d_sum,im_sum.ptr(),sumBytes,cudaMemcpyHostToDevice),"CUDA Memcpy Host To Device Failed");
-    // SAFE_CALL(cudaMemcpy(d_sum_sq,im_sum_sq.ptr(),sumSqBytes,cudaMemcpyHostToDevice),"CUDA Memcpy Host To Device Failed");
-    // SAFE_CALL(cudaMemcpy(d_map_m,map_m.ptr(),mapBytes,cudaMemcpyHostToDevice),"CUDA Memcpy Host To Device Failed");
-    // SAFE_CALL(cudaMemcpy(d_map_s,map_s.ptr(),mapBytes,cudaMemcpyHostToDevice),"CUDA Memcpy Host To Device Failed");
     getTimeMonotonic(&endTime);
     cout << "  --cudaMemcpy Time: " << diffclock(cudaMemcpyStartTime, endTime) << "ms." << endl;
 
@@ -429,10 +394,6 @@ void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int wi
     //Free the device memory
     SAFE_CALL(cudaFree(d_input),"CUDA Free Failed");
     SAFE_CALL(cudaFree(d_output),"CUDA Free Failed");
-    // // SAFE_CALL(cudaFree(d_sum),"CUDA Free Failed");
-    // // SAFE_CALL(cudaFree(d_sum_sq),"CUDA Free Failed");
-    // SAFE_CALL(cudaFree(d_map_m),"CUDA Free Failed");
-    // SAFE_CALL(cudaFree(d_map_s),"CUDA Free Failed");
 
     getTimeMonotonic(&endTime);
     cout << "=========== Total Time (excluding CUDA context creation): " << diffclock(startTime, endTime) << "ms." << endl;
