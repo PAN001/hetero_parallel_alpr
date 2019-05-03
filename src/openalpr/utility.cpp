@@ -123,10 +123,12 @@ namespace alpr
 
   vector<Mat> produceThresholds(const Mat img_gray, Config* config)
   {
-    imwrite("produceThresholds_input.jpg", img_gray);
+    char* name = "produceThresholds_input.jpg";
+    imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
     //Mat img_equalized = equalizeBrightness(img_gray);
 
+    img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
     cout << "rows: " << img_gray.size().height << endl;
     cout << "cols: " << img_gray.size().width << endl;
 
