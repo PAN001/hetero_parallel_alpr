@@ -125,7 +125,7 @@ namespace alpr
   {
     // cout << "original img_gray = "<< endl << " "  << img_gray << endl << endl;
     char* name = "produceThresholds_input.jpg";
-    displayImage(config, "Binarization  Thresholds", img_gray);
+    // displayImage(config, "Binarization  Thresholds", img_gray);
     // imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
     // img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
