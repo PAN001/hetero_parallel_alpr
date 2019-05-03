@@ -124,8 +124,8 @@ namespace alpr
   vector<Mat> produceThresholds(const Mat img_gray, Config* config)
   {
     // cout << "original img_gray = "<< endl << " "  << img_gray << endl << endl;
-    // char* name = "produceThresholds_input.jpg";
-    // imwrite(name, img_gray);
+    char* name = "produceThresholds_input.jpg";
+    imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
     // img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
     // cout << "recovered img_gray = "<< endl << " "  << img_gray << endl << endl;
