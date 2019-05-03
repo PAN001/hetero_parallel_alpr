@@ -181,9 +181,9 @@ namespace alpr
       std::stringstream ss;
       ss << i << "_threshold.jpg";
       outputname = ss.str();
-      // imwrite(outputname, thresholds[i]);
+      imwrite(outputname, thresholds[i]);
 
-      displayImage(config, "Binarization  Thresholds", thresholds[i]);
+      // displayImage(config, "Binarization  Thresholds", thresholds[i]);
     }
 
     return thresholds;
