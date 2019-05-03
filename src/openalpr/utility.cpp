@@ -127,7 +127,7 @@ namespace alpr
     char* name = "produceThresholds_input.jpg";
     imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
-    resize(img_gray, img_gray, img_gray.size())
+    resize(img_gray, img_gray, Size(img_gray.size().width, img_gray.size().height))
     // img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
     // cout << "recovered img_gray = "<< endl << " "  << img_gray << endl << endl;
     cout << "rows: " << img_gray.size().height << endl;
