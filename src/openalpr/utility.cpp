@@ -161,7 +161,7 @@ namespace alpr
     getTimeMonotonic(&startTime);
 
     // Adaptive strategy
-    if(rows > 200 || cols > 200) {
+    if(rows > 50 || cols > 50) {
       // GPU
 
       // Sauvola
@@ -213,7 +213,7 @@ namespace alpr
         cout << "  -- CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
       }
     }
-    
+
     return thresholds;
     //threshold(img_equalized, img_threshold, 100, 255, THRESH_BINARY);
   }
