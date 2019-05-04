@@ -121,7 +121,7 @@ namespace alpr
     }
   }
 
-  vector<Mat> produceThresholds(const Mat img_gray, Config* config)
+  vector<Mat> produceThresholds(Mat img_gray, Config* config)
   {
     // cout << "original img_gray = "<< endl << " "  << img_gray << endl << endl;
     char* name = "../../files/250_250.jpg";
