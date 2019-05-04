@@ -39,14 +39,9 @@ ENDIF()
 IF ( NOT DEFINED WITH_STATEDETECTION )
   SET(WITH_STATEDETECTION OFF)
 ENDIF()
-<<<<<<< HEAD
-message(STATUS "QQQQQQQQQ")
-=======
 
->>>>>>> gpu
 message(STATUS "WITH_GPU_DETECTOR ${WITH_GPU_DETECTOR}")
 if ( NOT DEFINED WITH_GPU_DETECTOR )
-  message(STATUS "$$$$$$$$$$$$$$$$$$$$$$$$")
   SET(WITH_GPU_DETECTOR OFF)
 ENDIF()
 
@@ -81,11 +76,7 @@ IF (WIN32 AND WITH_TESTS)
   SET(WITH_TESTS OFF)
 ENDIF()
 
-<<<<<<< HEAD
-message("YYYYYYYY Tesseract: ${Tesseract_FRAMEWORK_PATH}")
-=======
 message("Tesseract: ${Tesseract_FRAMEWORK_PATH}")
->>>>>>> gpu
 IF(Tesseract_FRAMEWORK_PATH AND Leptonica_FRAMEWORK_PATH) 
   MESSAGE(STATUS "Using Tesseract iOS framework: ${Tesseract_FRAMEWORK_PATH}")
   MESSAGE(STATUS "Using Leptonica iOS framework: ${Leptonica_FRAMEWORK_PATH}")
@@ -93,19 +84,9 @@ IF(Tesseract_FRAMEWORK_PATH AND Leptonica_FRAMEWORK_PATH)
   SET(Tesseract_LIBRARIES "${Tesseract_FRAMEWORK_PATH};${Leptonica_FRAMEWORK_PATH}")
   SET(Tesseract_INCLUDE_DIRS "${Tesseract_FRAMEWORK_PATH}/Headers")
 ELSE()
-<<<<<<< HEAD
-  #FIND_PACKAGE( Tesseract REQUIRED )
-  #FIND_PACKAGE( Tesseract REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local NO_DEFAULT_PATH)
-#  SET(Tesseract_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so.3")
-  #SET(Tesseract_LIBS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/")
- 
-  SET(Tesseract_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so")
-  SET(Tesseract_INCLUDE_DIRS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/include/tesseract")
-=======
-  SET(Tesseract_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so")
+ SET(Tesseract_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so")
   SET(Tesseract_INCLUDE_DIRS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/include/tesseract")
   #FIND_PACKAGE( Tesseract REQUIRED )
->>>>>>> gpu
 ENDIF()
 
 
@@ -118,8 +99,6 @@ message(STATUS "    include path: ${Tesseract_INCLUDE_DIRS}")
 include_directories(${Tesseract_INCLUDE_DIRS})
 
 FIND_PACKAGE(OpenMP)
-<<<<<<< HEAD
-message(STATUS "XXXXXXXXXXXXXXXXXX OPENMP_FOUND: ${OpenMP_FOUND}")
 
 #IF (OpenMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -130,17 +109,6 @@ message(STATUS "XXXXXXXXXXXXXXXXXX OPENMP_FOUND: ${OpenMP_FOUND}")
     message(STATUS "----------- CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 #endif()
-
-=======
-message(STATUS "OPENMP_FOUND: ${OpenMP_FOUND}")
-
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-
-message(STATUS "---------- CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
-message(STATUS "---------- CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
->>>>>>> gpu
 
 IF(OpenCV_FRAMEWORK_PATH)
   MESSAGE(STATUS "Using OpenCV iOS framework: ${OpenCV_FRAMEWORK_PATH}")
@@ -196,15 +164,7 @@ ELSE()
 
 ENDIF()
 
-<<<<<<< HEAD
-
 add_compile_options(-std=c++11)
-#set(CMAKE_CXX_STANDARD 11)
-#set(CMAKE_CXX_STANDARD_REQUIRED True)
-#set(CMAKE_CXX_EXTENSIONS False)
-=======
-add_compile_options(-std=c++11)
->>>>>>> gpu
 set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall ")
 
 # Compile CUDA
@@ -276,10 +236,6 @@ IF (WITH_DAEMON)
   #FIND_PACKAGE( log4cplus REQUIRED )
   SET(log4cplus_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblog4cplus.so")
   SET(log4cplus_INCLUDE_DIRS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/include/log4cplus")
-<<<<<<< HEAD
-
-=======
->>>>>>> gpu
   TARGET_LINK_LIBRARIES(alprd
       ${OPENALPR_LIB}
 	  support

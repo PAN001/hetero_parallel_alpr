@@ -234,11 +234,8 @@ namespace alpr
     debugShowImages = 	getBoolean(ini, defaultIni, "", "debug_show_images",	false);
     debugPauseOnFrame = 	getBoolean(ini, defaultIni, "", "debug_pause_on_frame",	false);
 
-<<<<<<< HEAD
     thread_cnt = 8;
     threshold_cnt = 3;
-=======
->>>>>>> gpu
   }
   
   
