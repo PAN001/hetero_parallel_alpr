@@ -5,7 +5,10 @@ set(CMAKE_BUILD_TYPE RelWithDebugInfo)
 
 cmake_minimum_required (VERSION 2.6)
 
-SET(OpenCV_DIR "/home/ubuntu/opencv/local/lib")
+#SET(OpenCV_DIR "/usr/share/OpenCV")
+SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/share/OpenCV")
+#SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/baseline/share/OpenCV")
+#SET(Tesseract_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/tesseract-3.02.02")
 # Set the OpenALPR version in cmake, and also add it as a DEFINE for the code to access
 SET(OPENALPR_MAJOR_VERSION "2")
 SET(OPENALPR_MINOR_VERSION "3")
@@ -35,8 +38,10 @@ ENDIF()
 IF ( NOT DEFINED WITH_STATEDETECTION )
   SET(WITH_STATEDETECTION OFF)
 ENDIF()
-
+message(STATUS "QQQQQQQQQ")
+message(STATUS "WITH_GPU_DETECTOR ${WITH_GPU_DETECTOR}")
 if ( NOT DEFINED WITH_GPU_DETECTOR )
+  message(STATUS "$$$$$$$$$$$$$$$$$$$$$$$$")
   SET(WITH_GPU_DETECTOR OFF)
 ENDIF()
 
@@ -71,6 +76,7 @@ IF (WIN32 AND WITH_TESTS)
   SET(WITH_TESTS OFF)
 ENDIF()
 
+message("YYYYYYYY Tesseract: ${Tesseract_FRAMEWORK_PATH}")
 IF(Tesseract_FRAMEWORK_PATH AND Leptonica_FRAMEWORK_PATH) 
   MESSAGE(STATUS "Using Tesseract iOS framework: ${Tesseract_FRAMEWORK_PATH}")
   MESSAGE(STATUS "Using Leptonica iOS framework: ${Leptonica_FRAMEWORK_PATH}")
@@ -78,17 +84,37 @@ IF(Tesseract_FRAMEWORK_PATH AND Leptonica_FRAMEWORK_PATH)
   SET(Tesseract_LIBRARIES "${Tesseract_FRAMEWORK_PATH};${Leptonica_FRAMEWORK_PATH}")
   SET(Tesseract_INCLUDE_DIRS "${Tesseract_FRAMEWORK_PATH}/Headers")
 ELSE()
-  FIND_PACKAGE( Tesseract REQUIRED )
+  #FIND_PACKAGE( Tesseract REQUIRED )
+  #FIND_PACKAGE( Tesseract REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local NO_DEFAULT_PATH)
+#  SET(Tesseract_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so.3")
+  #SET(Tesseract_LIBS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/")
+ 
+  SET(Tesseract_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/libtesseract.so;/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblept.so")
+  SET(Tesseract_INCLUDE_DIRS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/include/tesseract")
 ENDIF()
+
+
+message("Tesseract: ${Tesseract_DIR}")
+message(STATUS "Tesseract library status:")
+message(STATUS "    version: ${Tesseract_VERSION}")
+message(STATUS "    libraries: ${Tesseract_LIBRARIES}")
+message(STATUS "    include path: ${Tesseract_INCLUDE_DIRS}")
 
 include_directories(${Tesseract_INCLUDE_DIRS})
 
 FIND_PACKAGE(OpenMP)
-IF (OpenMP_FOUND)
+message(STATUS "XXXXXXXXXXXXXXXXXX OPENMP_FOUND: ${OpenMP_FOUND}")
+
+#IF (OpenMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-endif()
+
+    message(STATUS "---------- CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+    message(STATUS "----------- CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+
+#endif()
+
 
 IF(OpenCV_FRAMEWORK_PATH)
   MESSAGE(STATUS "Using OpenCV iOS framework: ${OpenCV_FRAMEWORK_PATH}")
@@ -106,8 +132,14 @@ ELSE()
     /storage/projects/alpr/libraries/opencv/
     )
   # Opencv Package
+<<<<<<< HEAD
   FIND_PACKAGE( OpenCV REQUIRED )
   #FIND_PACKAGE( OpenCV REQUIRED PATHS /home/ubuntu/opencv/local/  NO_DEFAULT_PATH)
+=======
+  #FIND_PACKAGE( OpenCV REQUIRED )
+  #FIND_PACKAGE( OpenCV REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/ NO_DEFAULT_PATH)
+  FIND_PACKAGE( OpenCV REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/baseline/include/ NO_DEFAULT_PATH)
+>>>>>>> 939161a... Build on GHC
 ENDIF()
 
 IF (${OpenCV_VERSION} VERSION_LESS 2.4.7)
@@ -144,6 +176,10 @@ ELSE()
 ENDIF()
 
 
+add_compile_options(-std=c++11)
+#set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_STANDARD_REQUIRED True)
+#set(CMAKE_CXX_EXTENSIONS False)
 set(CMAKE_CSS_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall ")
 if (NOT IOS)
   ADD_EXECUTABLE( alpr  main.cpp )
@@ -186,7 +222,9 @@ IF (WITH_DAEMON)
 )
 
   FIND_PACKAGE( CURL REQUIRED )
-  FIND_PACKAGE( log4cplus REQUIRED )
+  #FIND_PACKAGE( log4cplus REQUIRED )
+  SET(log4cplus_LIBRARIES "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/lib/liblog4cplus.so")
+  SET(log4cplus_INCLUDE_DIRS "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/include/log4cplus")
 
   TARGET_LINK_LIBRARIES(alprd
       ${OPENALPR_LIB}
