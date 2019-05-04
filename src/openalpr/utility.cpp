@@ -215,7 +215,7 @@ namespace alpr
     getTimeMonotonic(&endTime);
     cout << "===> CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
-    // exit(0);
+    exit(0);
 
     // timespec startTime;
     // getTimeMonotonic(&startTime);
