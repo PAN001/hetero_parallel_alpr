@@ -4,7 +4,15 @@ set(CMAKE_BUILD_TYPE RelWithDebugInfo)
 #set(CMAKE_BUILD_TYPE Debug)
 
 cmake_minimum_required (VERSION 2.6)
+<<<<<<< HEAD
 SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/share/OpenCV")
+=======
+
+#SET(OpenCV_DIR "/usr/share/OpenCV")
+SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/share/OpenCV")
+#SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/baseline/share/OpenCV")
+#SET(Tesseract_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/tesseract-3.02.02")
+>>>>>>> deb1716... Build on GHC
 # Set the OpenALPR version in cmake, and also add it as a DEFINE for the code to access
 SET(OPENALPR_MAJOR_VERSION "2")
 SET(OPENALPR_MINOR_VERSION "3")
@@ -34,8 +42,10 @@ ENDIF()
 IF ( NOT DEFINED WITH_STATEDETECTION )
   SET(WITH_STATEDETECTION OFF)
 ENDIF()
-
+message(STATUS "QQQQQQQQQ")
+message(STATUS "WITH_GPU_DETECTOR ${WITH_GPU_DETECTOR}")
 if ( NOT DEFINED WITH_GPU_DETECTOR )
+  message(STATUS "$$$$$$$$$$$$$$$$$$$$$$$$")
   SET(WITH_GPU_DETECTOR OFF)
 ENDIF()
 
@@ -70,6 +80,7 @@ IF (WIN32 AND WITH_TESTS)
   SET(WITH_TESTS OFF)
 ENDIF()
 
+message("YYYYYYYY Tesseract: ${Tesseract_FRAMEWORK_PATH}")
 IF(Tesseract_FRAMEWORK_PATH AND Leptonica_FRAMEWORK_PATH) 
   MESSAGE(STATUS "Using Tesseract iOS framework: ${Tesseract_FRAMEWORK_PATH}")
   MESSAGE(STATUS "Using Leptonica iOS framework: ${Leptonica_FRAMEWORK_PATH}")
@@ -82,14 +93,24 @@ ELSE()
   #FIND_PACKAGE( Tesseract REQUIRED )
 ENDIF()
 
+
+message("Tesseract: ${Tesseract_DIR}")
+message(STATUS "Tesseract library status:")
+message(STATUS "    version: ${Tesseract_VERSION}")
+message(STATUS "    libraries: ${Tesseract_LIBRARIES}")
+message(STATUS "    include path: ${Tesseract_INCLUDE_DIRS}")
+
 include_directories(${Tesseract_INCLUDE_DIRS})
 
 FIND_PACKAGE(OpenMP)
-IF (OpenMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-endif()
+message(STATUS "OPENMP_FOUND: ${OpenMP_FOUND}")
+
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+
+message(STATUS "---------- CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}")
+message(STATUS "---------- CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 IF(OpenCV_FRAMEWORK_PATH)
   MESSAGE(STATUS "Using OpenCV iOS framework: ${OpenCV_FRAMEWORK_PATH}")
@@ -107,7 +128,9 @@ ELSE()
     /storage/projects/alpr/libraries/opencv/
     )
   # Opencv Package
-  FIND_PACKAGE( OpenCV REQUIRED )
+  #FIND_PACKAGE( OpenCV REQUIRED )
+  #FIND_PACKAGE( OpenCV REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/ NO_DEFAULT_PATH)
+  FIND_PACKAGE( OpenCV REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/baseline/include/ NO_DEFAULT_PATH)
 ENDIF()
 
 IF (${OpenCV_VERSION} VERSION_LESS 2.4.7)
@@ -118,6 +141,11 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_definitions( -DOPENCV_MAJOR_VERSION=${OpenCV_VERSION_MAJOR})
 
+message("OpenCV: ${OpenCV_DIR}")
+message(STATUS "OpenCV library status:")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBS}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 include_directories(./openalpr )
 
