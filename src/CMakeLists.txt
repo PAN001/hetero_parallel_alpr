@@ -4,15 +4,8 @@ set(CMAKE_BUILD_TYPE RelWithDebugInfo)
 #set(CMAKE_BUILD_TYPE Debug)
 
 cmake_minimum_required (VERSION 2.6)
-<<<<<<< HEAD
 SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/share/OpenCV")
-=======
 
-#SET(OpenCV_DIR "/usr/share/OpenCV")
-SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/share/OpenCV")
-#SET(OpenCV_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/baseline/share/OpenCV")
-#SET(Tesseract_DIR "/afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/tesseract-3.02.02")
->>>>>>> deb1716... Build on GHC
 # Set the OpenALPR version in cmake, and also add it as a DEFINE for the code to access
 SET(OPENALPR_MAJOR_VERSION "2")
 SET(OPENALPR_MINOR_VERSION "3")
