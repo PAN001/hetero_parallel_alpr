@@ -78,15 +78,9 @@ namespace alpr
     timespec startTime;
     getTimeMonotonic(&startTime);
 #if OPENCV_MAJOR_VERSION == 2
-    gpu::GpuMat cudaFrame, plateregions_buffer;
-    gpu::GpuMat plateregions_buffer0, plateregions_buffer1;
 #else
     cuda::GpuMat cudaFrame, plateregions_buffer;
 #endif
-    Mat plateregions_downloaded;
-//    Mat plateregions_downloaded0, plateregions_downloaded1;
-
-    cudaFrame.upload(frame);
 #if OPENCV_MAJOR_VERSION == 2
     /*int numdetected = cuda_cascade.detectMultiScale(cudaFrame, plateregions_buffer, 
             (double) config->detection_iteration_increase, config->detectionStrictness, 
@@ -95,30 +89,30 @@ namespace alpr
     #pragma omp parallel num_threads(2)
     {
           int tid = omp_get_thread_num();
-    	if (tid == 0) {	
-	    /*
-            int numdetected0 = cuda_cascade0.detectMultiScale(frame, plateregions_buffer0,
+	  int numdetected = 0;
+	  gpu::GpuMat plateregions_buffer;
+    	  if (tid == 0) {	 
+            numdetected = cuda_cascade0.detectMultiScale(frame, plateregions_buffer,
             (double) config->detection_iteration_increase, config->detectionStrictness,
             min_plate_size);
-	    std::cout << "------ thread: " << tid << " numberdetect: " << numdetected0 << endl;
-	    Mat plateregions_downloaded0;
-	    plateregions_buffer0.colRange(0, numdetected0).download(plateregions_downloaded0);
-	for (int i = 0; i < numdetected0; ++i)
-    {
-      plates.push_back(plateregions_downloaded0.ptr<cv::Rect>()[i]);
-    }*/	} else {
-	              int numdetected1 =  cuda_cascade1.detectMultiScale(frame, plateregions_buffer1,
+	    std::cout << "------ thread: " << tid << " numberdetect: " << numdetected << endl;
+	  } else {
+	    numdetected = cuda_cascade1.detectMultiScale(frame, plateregions_buffer,
 	    (double) config->detection_iteration_increase, config->detectionStrictness,
             min_plate_size);
-		std::cout << "------ thread: " << tid << " numberdetect: " << numdetected1 << endl;
-	      Mat plateregions_downloaded1;
-               plateregions_buffer1.colRange(0, numdetected1).download(plateregions_downloaded1);
-	for (int i = 0; i < numdetected1; ++i)
-    {
-      plates.push_back(plateregions_downloaded1.ptr<cv::Rect>()[i]);
+	    std::cout << "------ thread: " << tid << " numberdetect: " << numdetected << endl;
+	  }
+
+	if (numdetected > 0) {
+	    Mat plateregions_downloaded;
+	    plateregions_buffer.colRange(0, numdetected).download(plateregions_downloaded);
+	    #pragma omp critical 
+	    {
+	        for (int i=0; i<numdetected; i++)
+		    plates.push_back(plateregions_downloaded.ptr<cv::Rect>()[i]);
+	    }
+     	}
     }
-	}
-     }
 	
 #else
     cuda_cascade->setScaleFactor((double) config->detection_iteration_increase);
