@@ -179,7 +179,7 @@ namespace alpr
 
     timespec endTime;
     getTimeMonotonic(&endTime);
-    cout << "  -- GPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+    cout << "===> GPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
     getTimeMonotonic(&startTime);
     // CPU
@@ -202,7 +202,7 @@ namespace alpr
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     getTimeMonotonic(&endTime);
-    cout << "  -- CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+    cout << "===> CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
     exit(0);
 
