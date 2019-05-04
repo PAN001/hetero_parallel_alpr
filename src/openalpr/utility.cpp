@@ -124,11 +124,11 @@ namespace alpr
   vector<Mat> produceThresholds(Mat img_gray, Config* config)
   {
     // cout << "original img_gray = "<< endl << " "  << img_gray << endl << endl;
-    char* name = "../../files/250_250.jpg";
+    // char* name = "../../files/250_250.jpg";
     // displayImage(config, "Binarization  Thresholds", img_gray);
     // imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
-    img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
+    // img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
     // cout << "recovered img_gray = "<< endl << " "  << img_gray << endl << endl;
     int rows = img_gray.size().height;
     int cols = img_gray.size().width;
@@ -180,6 +180,17 @@ namespace alpr
     timespec endTime;
     getTimeMonotonic(&endTime);
     cout << "===> GPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+
+    for (int i = 0; i < THRESHOLD_COUNT; i++) {
+      cout << "Showing threshold: " << i << endl;
+      std::string outputname;
+      std::stringstream ss;
+      ss << i << "_threshold.jpg";
+      outputname = ss.str();
+      imwrite(outputname, thresholds[i]);
+
+      // displayImage(config, "Binarization  Thresholds", thresholds[i]);
+    }
 
     getTimeMonotonic(&startTime);
     // CPU
@@ -256,17 +267,6 @@ namespace alpr
     //   cout << "  -- Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
     // }
 
-
-    // for (int i = 0; i < THRESHOLD_COUNT; i++) {
-    //   cout << "Showing threshold: " << i << endl;
-    //   std::string outputname;
-    //   std::stringstream ss;
-    //   ss << i << "_threshold.jpg";
-    //   outputname = ss.str();
-    //   imwrite(outputname, thresholds[i]);
-
-    //   // displayImage(config, "Binarization  Thresholds", thresholds[i]);
-    // }
 
     return thresholds;
     //threshold(img_equalized, img_threshold, 100, 255, THRESH_BINARY);
