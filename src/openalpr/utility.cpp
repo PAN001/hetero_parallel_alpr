@@ -42,9 +42,9 @@ namespace alpr
     expandedRegion.y = expandedRegion.y - halfY;
     expandedRegion.height =  expandedRegion.height + expandYPixels;
 
-	expandedRegion.x = std::min(std::max(expandedRegion.x, 0), maxX);
-	expandedRegion.y = std::min(std::max(expandedRegion.y, 0), maxY);
-	if (expandedRegion.x + expandedRegion.width > maxX)
+  expandedRegion.x = std::min(std::max(expandedRegion.x, 0), maxX);
+  expandedRegion.y = std::min(std::max(expandedRegion.y, 0), maxY);
+  if (expandedRegion.x + expandedRegion.width > maxX)
       expandedRegion.width = maxX - expandedRegion.x;
     if (expandedRegion.y + expandedRegion.height > maxY)
       expandedRegion.height = maxY - expandedRegion.y;
@@ -128,61 +128,19 @@ namespace alpr
     // displayImage(config, "Binarization  Thresholds", img_gray);
     // imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
-<<<<<<< HEAD
-    //Mat img_equalized = equalizeBrightness(img_gray);
-
-    char* outputname = "plate.jpg";
-    cout << "Writing binarized image to file '" << outputname << "'.\n";
-    imwrite(outputname, img_gray);
-
-    timespec startTime;
-    getTimeMonotonic(&startTime);
-=======
     // img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
     // cout << "recovered img_gray = "<< endl << " "  << img_gray << endl << endl;
     int rows = img_gray.size().height;
     int cols = img_gray.size().width;
     cout << "rows: " << rows << endl;
     cout << "cols: " << cols << endl;
->>>>>>> gpu
 
     vector<Mat> thresholds;
 
     for (int i = 0; i < THRESHOLD_COUNT; i++)
       thresholds.push_back(Mat(img_gray.size(), CV_8U));
 
-<<<<<<< HEAD
-    Mat im_sum, im_sum_sq;
-    integral(img_gray, im_sum, im_sum_sq, CV_64F);
-
-    double min_I, max_I;
-    minMaxLoc(img_gray, &min_I, &max_I);
-
-    int i = 0; // TODO: what's this used for?
-    // #pragma omp parallel for schedule(static)
-    #pragma omp parallel for num_threads(THRESHOLD_COUNT)
-    for (int j=0; j < THRESHOLD_COUNT; j++) {
-      int thread_id = omp_get_thread_num();
-      cout << "thread_id: " << thread_id << endl;
-
-      if (j == 0) {
-        int k = 0, win=18;
-        NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-        bitwise_not(thresholds[j], thresholds[j]);
-      } else if (j == 1) {
-         int k = 1;
-         int win = 22;
-         NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-         bitwise_not(thresholds[j], thresholds[j]);
-      } else if (j == 2) {
-        int k = 1;
-        NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], SAUVOLA, 12, 12, 0.18 * k);
-        bitwise_not(thresholds[j], thresholds[j]);
-      }
-    }
-=======
     int i = 0;
->>>>>>> gpu
 
     // Adaptive
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 7, 3);
