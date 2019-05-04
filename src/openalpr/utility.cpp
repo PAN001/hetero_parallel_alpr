@@ -20,12 +20,13 @@
 #include <opencv2/core/core.hpp>
 #include <functional>
 #include <cctype>
-#include <omp.h>
 
 #include "utility.h"
 
 using namespace cv;
 using namespace std;
+
+void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int winy, double k);
 
 namespace alpr
 {
@@ -41,13 +42,13 @@ namespace alpr
     expandedRegion.y = expandedRegion.y - halfY;
     expandedRegion.height =  expandedRegion.height + expandYPixels;
 
-  expandedRegion.x = std::min(std::max(expandedRegion.x, 0), maxX);
-  expandedRegion.y = std::min(std::max(expandedRegion.y, 0), maxY);
-  if (expandedRegion.x + expandedRegion.width > maxX)
+	expandedRegion.x = std::min(std::max(expandedRegion.x, 0), maxX);
+	expandedRegion.y = std::min(std::max(expandedRegion.y, 0), maxY);
+	if (expandedRegion.x + expandedRegion.width > maxX)
       expandedRegion.width = maxX - expandedRegion.x;
     if (expandedRegion.y + expandedRegion.height > maxY)
       expandedRegion.height = maxY - expandedRegion.y;
-
+    
     return expandedRegion;
   }
 
@@ -116,13 +117,18 @@ namespace alpr
     if (config->debugShowImages)
     {
       imshow(windowName, frame);
-      cv::waitKey(5);
+      cv::waitKey();
     }
   }
 
-  vector<Mat> produceThresholds(const Mat img_gray, Config* config)
+  vector<Mat> produceThresholds(Mat img_gray, Config* config)
   {
+    // cout << "original img_gray = "<< endl << " "  << img_gray << endl << endl;
+    // char* name = "../../files/250_250.jpg";
+    // displayImage(config, "Binarization  Thresholds", img_gray);
+    // imwrite(name, img_gray);
     const int THRESHOLD_COUNT = 3;
+<<<<<<< HEAD
     //Mat img_equalized = equalizeBrightness(img_gray);
 
     char* outputname = "plate.jpg";
@@ -131,12 +137,21 @@ namespace alpr
 
     timespec startTime;
     getTimeMonotonic(&startTime);
+=======
+    // img_gray= imread(name,CV_LOAD_IMAGE_GRAYSCALE);
+    // cout << "recovered img_gray = "<< endl << " "  << img_gray << endl << endl;
+    int rows = img_gray.size().height;
+    int cols = img_gray.size().width;
+    cout << "rows: " << rows << endl;
+    cout << "cols: " << cols << endl;
+>>>>>>> gpu
 
     vector<Mat> thresholds;
 
     for (int i = 0; i < THRESHOLD_COUNT; i++)
       thresholds.push_back(Mat(img_gray.size(), CV_8U));
 
+<<<<<<< HEAD
     Mat im_sum, im_sum_sq;
     integral(img_gray, im_sum, im_sum_sq, CV_64F);
 
@@ -165,56 +180,80 @@ namespace alpr
         bitwise_not(thresholds[j], thresholds[j]);
       }
     }
+=======
+    int i = 0;
+>>>>>>> gpu
 
     // Adaptive
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 7, 3);
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 13, 3);
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 17, 3);
-    // timespec s, e;
 
-    // getTimeMonotonic(&s);
     // // Wolf
     // int k = 0, win=18;
-    // //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-    // //bitwise_not(thresholds[i-1], thresholds[i-1]);
     // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     // bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    // getTimeMonotonic(&e);
-
-    // cout << "OpenALPR NiblackSauvolaWolfJolion Time #1: " << diffclock(s, e) << "ms." << endl;
-
-    // getTimeMonotonic(&s);
     // k = 1;
     // win = 22;
     // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     // bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
-    // //bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // getTimeMonotonic(&e);
 
-    // cout << "OpenALPR NiblackSauvolaWolfJolion Time #2: " << diffclock(s, e) << "ms." << endl;
+    timespec startTime;
+    getTimeMonotonic(&startTime);
 
+    // Adaptive strategy
+    if(rows > 50 || cols > 50) {
+      // GPU
 
-    // getTimeMonotonic(&s);
-    // // Sauvola
-    // k = 1;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    // bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // //k=2;
-    // //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    // //bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // getTimeMonotonic(&e);
+      // Sauvola
+      int k = 1;
+      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    // cout << "OpenALPR NiblackSauvolaWolfJolion Time #3: " << diffclock(s, e) << "ms." << endl;
+      k = 1;
+      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
+      k = 0;
+      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
+      if (config->debugTiming)
+      {
+        timespec endTime;
+        getTimeMonotonic(&endTime);
+        cout << "  -- GPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+      }
+    }
+    else {
+      // CPU
 
-    if (config->debugTiming)
-    {
-      timespec endTime;
-      getTimeMonotonic(&endTime);
-      cout << "  -- Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+      // Sauvola
+      int k = 1;
+      NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
+
+      k = 1;
+      NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
+
+      k = 0;
+      NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
+
+      if (config->debugTiming)
+      {
+        timespec endTime;
+        getTimeMonotonic(&endTime);
+        cout << "  -- CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+      }
     }
 
     return thresholds;
@@ -328,7 +367,7 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
     const char* word2 = s2.c_str();
     int len2 = s2.length();
     max--;
-
+  
     //int matrix[2][len2 + 1];
     std::vector<std::vector<int> > matrix;
     for (unsigned int i = 0; i < 2; i++)
@@ -340,14 +379,14 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
     }
     int i;
     int j;
-
+    
     /*
       Initialize the 0 row of "matrix".
 
-        0
-        1
-        2
-        3
+        0  
+        1  
+        2  
+        3  
 
      */
 
@@ -442,8 +481,8 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
       returnval = max + 1;
     return returnval;
 }
-
-
+  
+  
   LineSegment::LineSegment()
   {
     init(0, 0, 0, 0);
@@ -489,7 +528,7 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
     float y_intercept = getPointAt(0);
     return (y - y_intercept) / slope;
   }
-
+  
   Point LineSegment::closestPointOnSegmentTo(Point p)
   {
     float top = (p.x - p1.x) * (p2.x - p1.x) + (p.y - p1.y)*(p2.y - p1.y);
@@ -569,7 +608,7 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
 
     return result;
   }
-
+  
   cv::Point findClosestPoint(cv::Point2f* polygon_points, int num_points, cv::Point position)
   {
     int closest_point_index = 0;
@@ -585,15 +624,15 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
         closest_point_index = i;
       }
     }
-
+    
     return Point((int)polygon_points[closest_point_index].x, (int)polygon_points[closest_point_index].y);
   }
-
+  
   std::vector<cv::Point> sortPolygonPoints(cv::Point2f* polygon_points, cv::Size surrounding_image)
   {
-
+    
     vector<Point> return_points;
-
+    
     // Find top-left
     return_points.push_back( findClosestPoint(polygon_points, 4, Point(0, 0)) );
     return_points.push_back( findClosestPoint(polygon_points, 4,Point(surrounding_image.width, 0)) );
@@ -603,7 +642,7 @@ int levenshteinDistance (const std::string &s1, const std::string &s2, int max)
     return return_points;
   }
   // Given a contour and a mask, this function determines what percentage of the contour (area)
-  // is inside the masked area.
+  // is inside the masked area. 
   float getContourAreaPercentInsideMask(cv::Mat mask, std::vector<std::vector<cv::Point> > contours, std::vector<cv::Vec4i> hierarchy, int contourIndex)
   {
 

@@ -1,5 +1,6 @@
+CUDA_COMPILE(CU_O ../openalpr/binarize_sauvola.cu)
 
-ADD_EXECUTABLE( openalpr-utils-sortstate sortstate.cpp  )
+ADD_EXECUTABLE( openalpr-utils-sortstate sortstate.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-sortstate
     ${OPENALPR_LIB}
 	${STATE_DETECTION_LIB}
@@ -8,7 +9,8 @@ TARGET_LINK_LIBRARIES(openalpr-utils-sortstate
 	${Tesseract_LIBRARIES}
   )
   
-ADD_EXECUTABLE( openalpr-utils-classifychars classifychars.cpp )
+
+ADD_EXECUTABLE( openalpr-utils-classifychars classifychars.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-classifychars
     ${OPENALPR_LIB}
     support
@@ -16,28 +18,48 @@ TARGET_LINK_LIBRARIES(openalpr-utils-classifychars
 	${Tesseract_LIBRARIES}
   )
   
+<<<<<<< HEAD
  
 ADD_EXECUTABLE( openalpr-utils-prepcharsfortraining prepcharsfortraining.cpp )
+=======
+if (NOT DEFINED WIN32)
+#ADD_EXECUTABLE(openalpr-utils-benchmark
+#		benchmarks/benchmark.cpp 
+#		benchmarks/benchmark_utils.cpp 
+#		benchmarks/endtoendtest.cpp 
+#)
+#TARGET_LINK_LIBRARIES(openalpr-utils-benchmark
+ #   ${OPENALPR_LIB}
+  #  ${STATE_DETECTION_LIB}
+   # support
+#    pthread
+#    ${OpenCV_LIBS} 
+#	${Tesseract_LIBRARIES}
+#  )
+ENDIF()
+
+ADD_EXECUTABLE( openalpr-utils-prepcharsfortraining prepcharsfortraining.cpp ${CU_O})
+>>>>>>> gpu
 TARGET_LINK_LIBRARIES(openalpr-utils-prepcharsfortraining
     support
     ${OpenCV_LIBS} 
   )
  
-ADD_EXECUTABLE( openalpr-utils-binarizefontsheet binarizefontsheet.cpp )
+ADD_EXECUTABLE( openalpr-utils-binarizefontsheet binarizefontsheet.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-binarizefontsheet
     ${OPENALPR_LIB}
     support
     ${OpenCV_LIBS} 
   ) 
   
-ADD_EXECUTABLE( openalpr-utils-tagplates tagplates.cpp )
+ADD_EXECUTABLE( openalpr-utils-tagplates tagplates.cpp ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-tagplates
     ${OPENALPR_LIB}
     support
     ${OpenCV_LIBS} 
   )
   
-ADD_EXECUTABLE( openalpr-utils-calibrate calibrate.cpp  )
+ADD_EXECUTABLE( openalpr-utils-calibrate calibrate.cpp  ${CU_O})
 TARGET_LINK_LIBRARIES(openalpr-utils-calibrate
     ${OPENALPR_LIB}
     support
@@ -51,6 +73,13 @@ install (TARGETS openalpr-utils-calibrate DESTINATION bin)
 
 install (TARGETS openalpr-utils-classifychars DESTINATION bin)
 
+<<<<<<< HEAD
+=======
+if (NOT DEFINED WIN32)
+#install (TARGETS openalpr-utils-benchmark DESTINATION bin)
+ENDIF()
+
+>>>>>>> gpu
 install (TARGETS openalpr-utils-prepcharsfortraining DESTINATION bin)
 install (TARGETS openalpr-utils-tagplates DESTINATION bin)
 install (TARGETS openalpr-utils-calibrate DESTINATION bin)

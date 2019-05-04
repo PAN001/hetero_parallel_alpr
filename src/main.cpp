@@ -44,6 +44,8 @@ const std::string WEBCAM_PREFIX = "/dev/video";
 MotionDetector motiondetector;
 bool do_motiondetection = true;
 
+void triggerCudaCreation();
+
 /** Function Headers */
 bool detectandshow(Alpr* alpr, cv::Mat frame, std::string region, bool writeJson);
 bool is_supported_image(std::string image_file);
@@ -57,7 +59,6 @@ bool program_active = true;
 
 int main( int argc, const char** argv )
 {
-  std::cout << "starts" << std::endl;
   std::vector<std::string> filenames;
   std::string configFile = "";
   bool outputJson = false;
@@ -121,6 +122,10 @@ int main( int argc, const char** argv )
 
   
   cv::Mat frame;
+
+  // CUDA context creation
+  std::cout << "CUDA context creation" << std::endl;
+  triggerCudaCreation();
 
   Alpr alpr(country, configFile);
   alpr.setTopN(topn);
@@ -284,7 +289,6 @@ int main( int argc, const char** argv )
       {
         frame = cv::imread(filename);
 
-        // Trace: entry point
         bool plate_found = detectandshow(&alpr, frame, "", outputJson);
 
         if (!plate_found && !outputJson)
@@ -351,7 +355,6 @@ bool detectandshow( Alpr* alpr, cv::Mat frame, std::string region, bool writeJso
   }
   else regionsOfInterest.push_back(AlprRegionOfInterest(0, 0, frame.cols, frame.rows));
   AlprResults results;
-  // TODO: Step 0: recognize
   if (regionsOfInterest.size()>0) results = alpr->recognize(frame.data, frame.elemSize(), frame.cols, frame.rows, regionsOfInterest);
 
   timespec endTime;

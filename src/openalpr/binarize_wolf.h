@@ -43,7 +43,7 @@ namespace alpr
   #define fget(x,y)    at<float>(y,x)
   #define fset(x,y,v)  at<float>(y,x)=v;
 
-  void NiblackSauvolaWolfJolion (cv::Mat im, cv::Mat im_sum, cv::Mat im_sum_sq, double min_I, double max_I, cv::Mat output, NiblackVersion version,
+  void NiblackSauvolaWolfJolion (cv::Mat im, cv::Mat output, NiblackVersion version,
                                  int winx, int winy, double k, double dR=BINARIZEWOLF_DEFAULTDR);
 
 }

@@ -74,7 +74,7 @@ namespace alpr
 
   double median(int array[], int arraySize);
 
-  std::vector<cv::Mat> produceThresholds(const cv::Mat img_gray, Config* config);
+  std::vector<cv::Mat> produceThresholds(cv::Mat img_gray, Config* config);
 
   cv::Mat drawImageDashboard(std::vector<cv::Mat> images, int imageType, unsigned int numColumns);
 

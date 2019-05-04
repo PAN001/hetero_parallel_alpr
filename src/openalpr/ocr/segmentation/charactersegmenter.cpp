@@ -329,7 +329,7 @@ namespace alpr
           float widthDiffPercent = widthDiffPixels / avgCharWidth;
           rowScore += 10 * (1 - widthDiffPercent);
 
-          if (widthDiffPercent < 0.25)	// Bonus points when it's close to the average character width
+          if (widthDiffPercent < 0.25)  // Bonus points when it's close to the average character width
             rowScore += 8;
 
           validBoxes.push_back(allBoxes[boxidx]);
@@ -401,7 +401,7 @@ namespace alpr
     getTimeMonotonic(&startTime);
     
 
-    //const float MIN_CHAR_AREA = 0.02 * avgCharWidth * avgCharHeight;	// To clear out the tiny specks
+    //const float MIN_CHAR_AREA = 0.02 * avgCharWidth * avgCharHeight;  // To clear out the tiny specks
     const float MIN_CONTOUR_HEIGHT = config->segmentationMinSpeckleHeightPercent * avgCharHeight;
 
     Mat textLineMask = Mat::zeros(thresholds[0].size(), CV_8U);
@@ -697,8 +697,8 @@ namespace alpr
             //bitwise_and(colorMask, thresholdCopy2, thresholdCopy2);
             //tmpDebug.push_back(addLabel(thresholdCopy2, "box Mask + Thresh + Color"));
   //
-  //		Mat tmpytmp = addLabel(thresholdCopy2, "box Mask + Thresh + Color");
-  //		Mat tmpx = drawImageDashboard(tmpDebug, tmpytmp.type(), 1);
+  //    Mat tmpytmp = addLabel(thresholdCopy2, "box Mask + Thresh + Color");
+  //    Mat tmpx = drawImageDashboard(tmpDebug, tmpytmp.type(), 1);
             //drawAndWait( &tmpx );
 
             cout << "Segmentation Filter Clean by Color: Removed Threshold " << i << " charregion " << j << endl;
@@ -960,7 +960,7 @@ namespace alpr
       if ((leftCoveragePercent > MAX_COVERAGE_PERCENT) ||
           (charRegions[0].width - leftCoveragePx < config->segmentationMinBoxWidthPx))
       {
-        rectangle(mask, charRegions[0], Scalar(0,0,0), -1);	// Mask the whole region
+        rectangle(mask, charRegions[0], Scalar(0,0,0), -1); // Mask the whole region
         if (this->config->debugCharSegmenter)
           cout << "Edge Filter: Entire left region is erased" << endl;
       }
