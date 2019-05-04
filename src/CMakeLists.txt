@@ -132,14 +132,9 @@ ELSE()
     /storage/projects/alpr/libraries/opencv/
     )
   # Opencv Package
-<<<<<<< HEAD
-  FIND_PACKAGE( OpenCV REQUIRED )
-  #FIND_PACKAGE( OpenCV REQUIRED PATHS /home/ubuntu/opencv/local/  NO_DEFAULT_PATH)
-=======
   #FIND_PACKAGE( OpenCV REQUIRED )
   #FIND_PACKAGE( OpenCV REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/local/ NO_DEFAULT_PATH)
   FIND_PACKAGE( OpenCV REQUIRED PATHS /afs/cs.cmu.edu/academic/class/15418-s19/public/projects/park-chen/baseline/include/ NO_DEFAULT_PATH)
->>>>>>> 939161a... Build on GHC
 ENDIF()
 
 IF (${OpenCV_VERSION} VERSION_LESS 2.4.7)
