@@ -159,115 +159,61 @@ namespace alpr
 
     timespec startTime;
     getTimeMonotonic(&startTime);
-    // GPU
 
-    // Sauvola
-    int k = 1;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
-    bitwise_not(thresholds[i-1], thresholds[i-1]);
+    // Adaptive strategy
+    if(rows > 200 || cols > 200) {
+      // GPU
 
-    k = 1;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    bitwise_not(thresholds[i-1], thresholds[i-1]);
+      // Sauvola
+      int k = 1;
+      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    k = 0;
-    // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    bitwise_not(thresholds[i-1], thresholds[i-1]);
+      k = 1;
+      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    timespec endTime;
-    getTimeMonotonic(&endTime);
-    cout << "===> GPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+      k = 0;
+      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    // for (int i = 0; i < THRESHOLD_COUNT; i++) {
-    //   cout << "Showing threshold: " << i << endl;
-    //   std::string outputname;
-    //   std::stringstream ss;
-    //   ss << i << "_threshold.jpg";
-    //   outputname = ss.str();
-    //   imwrite(outputname, thresholds[i]);
+      if (config->debugTiming)
+      {
+        timespec endTime;
+        getTimeMonotonic(&endTime);
+        cout << "  -- GPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+      }
+    }
+    else {
+      // CPU
 
-    //   // displayImage(config, "Binarization  Thresholds", thresholds[i]);
-    // }
+      // Sauvola
+      int k = 1;
+      NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    getTimeMonotonic(&startTime);
-    // CPU
+      k = 1;
+      NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    i = 0;
-    // Sauvola
-    k = 1;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
-    bitwise_not(thresholds[i-1], thresholds[i-1]);
+      k = 0;
+      NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-    k = 1;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    bitwise_not(thresholds[i-1], thresholds[i-1]);
-
-    k = 0;
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    bitwise_not(thresholds[i-1], thresholds[i-1]);
-
-    getTimeMonotonic(&endTime);
-    cout << "===> CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
-
-    exit(0);
-
-    // timespec startTime;
-    // getTimeMonotonic(&startTime);
-
-    // // Adaptive strategy
-    // if(rows > 200 || cols > 200) {
-    //   // GPU
-
-    //   // Sauvola
-    //   int k = 1;
-    //   // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    //   NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
-    //   bitwise_not(thresholds[i-1], thresholds[i-1]);
-
-    //   k = 1;
-    //   // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    //   NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    //   bitwise_not(thresholds[i-1], thresholds[i-1]);
-
-    //   k = 0;
-    //   // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    //   NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    //   bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // }
-    // else {
-    //   // CPU
-
-    //   // Sauvola
-    //   int k = 1;
-    //   NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-    //   // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
-    //   bitwise_not(thresholds[i-1], thresholds[i-1]);
-
-    //   k = 1;
-    //   NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    //   // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    //   bitwise_not(thresholds[i-1], thresholds[i-1]);
-
-    //   k = 0;
-    //   NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-    //   // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-    //   bitwise_not(thresholds[i-1], thresholds[i-1]);
-    // }
-
-    // if (config->debugTiming)
-    // {
-    //   timespec endTime;
-    //   getTimeMonotonic(&endTime);
-    //   cout << "  -- Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
-    // }
-
-
+      if (config->debugTiming)
+      {
+        timespec endTime;
+        getTimeMonotonic(&endTime);
+        cout << "  -- CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
+      }
+    }
+    
     return thresholds;
     //threshold(img_equalized, img_threshold, 100, 255, THRESH_BINARY);
   }
