@@ -6,6 +6,7 @@ namespace alpr
 {
   Detector* createDetector(Config* config, PreWarp* prewarp)
   {
+    std::cout << "############ createDetector" << std::endl;
     if (config->detector == DETECTOR_LBP_CPU)
     {
       // CPU mode

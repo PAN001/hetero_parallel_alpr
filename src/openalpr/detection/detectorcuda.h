@@ -54,6 +54,7 @@ namespace alpr
 
 #if OPENCV_MAJOR_VERSION == 2
       cv::gpu::CascadeClassifier_GPU cuda_cascade;
+      cv::gpu::CascadeClassifier_GPU cuda_cascade0, cuda_cascade1;
 #else
       cv::Ptr<cv::cuda::CascadeClassifier> cuda_cascade;
 #endif

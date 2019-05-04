@@ -71,8 +71,11 @@ install (TARGETS openalpr   DESTINATION    ${CMAKE_INSTALL_PREFIX}/lib)
 
 # Compile GPU detector
 IF ( WITH_GPU_DETECTOR )
+message(STATUS "TEST")
 add_definitions(-DCOMPILE_GPU=1)
 ENDIF()
+
+message(STATUS "COMPILE_GPU=${COMPILE_GPU}")
 
 # Add definition for default config file
 add_definitions(-DDEFAULT_CONFIG_FILE="${CMAKE_INSTALL_SYSCONFDIR}/openalpr/openalpr.conf")
