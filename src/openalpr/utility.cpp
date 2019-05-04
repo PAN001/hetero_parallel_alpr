@@ -186,7 +186,7 @@ namespace alpr
 
     i = 0;
     // Sauvola
-    int k = 1;
+    k = 1;
     NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
     // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
     bitwise_not(thresholds[i-1], thresholds[i-1]);
