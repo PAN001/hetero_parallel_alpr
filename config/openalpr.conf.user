@@ -75,7 +75,7 @@ postprocess_confidence_skip_level = 80
 
 debug_general         = 0
 debug_timing          = 1
-debug_detector        = 0
+debug_detector        = 1
 debug_prewarp         = 0
 debug_state_id        = 0
 debug_plate_lines     = 0
