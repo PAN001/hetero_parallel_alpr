@@ -204,6 +204,7 @@ namespace alpr
     getTimeMonotonic(&endTime);
     cout << "  -- CPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
+    exit(0);
 
     // timespec startTime;
     // getTimeMonotonic(&startTime);
@@ -269,8 +270,6 @@ namespace alpr
 
     return thresholds;
     //threshold(img_equalized, img_threshold, 100, 255, THRESH_BINARY);
-
-    exit();
   }
 
   double median(int array[], int arraySize)
