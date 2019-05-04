@@ -181,16 +181,16 @@ namespace alpr
     getTimeMonotonic(&endTime);
     cout << "===> GPU Produce Threshold Time: " << diffclock(startTime, endTime) << "ms." << endl;
 
-    for (int i = 0; i < THRESHOLD_COUNT; i++) {
-      cout << "Showing threshold: " << i << endl;
-      std::string outputname;
-      std::stringstream ss;
-      ss << i << "_threshold.jpg";
-      outputname = ss.str();
-      imwrite(outputname, thresholds[i]);
+    // for (int i = 0; i < THRESHOLD_COUNT; i++) {
+    //   cout << "Showing threshold: " << i << endl;
+    //   std::string outputname;
+    //   std::stringstream ss;
+    //   ss << i << "_threshold.jpg";
+    //   outputname = ss.str();
+    //   imwrite(outputname, thresholds[i]);
 
-      // displayImage(config, "Binarization  Thresholds", thresholds[i]);
-    }
+    //   // displayImage(config, "Binarization  Thresholds", thresholds[i]);
+    // }
 
     getTimeMonotonic(&startTime);
     // CPU
