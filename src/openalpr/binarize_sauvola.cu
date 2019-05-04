@@ -364,7 +364,7 @@ void NiblackSauvolaWolfJolionCudaWrapper(Mat input, Mat output, int winx, int wi
     int y_firstth= wyh;
     // cout << "y_firstth: " << y_firstth << endl;
     int total_cnt = y_lastth - y_firstth + 1;
-    int rows_per_thread = 8;
+    int rows_per_thread = 4;
     // cout << "total_cnt: " << total_cnt << endl;
     const dim3 block(32 / rows_per_thread, 1, 1);
     // cout << "block.x: " << block.x << endl;
