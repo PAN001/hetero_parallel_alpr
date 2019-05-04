@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 ; Specify the path to the runtime data directory
 runtime_dir = ${CMAKE_INSTALL_PREFIX}/share/openalpr/runtime_data
@@ -91,4 +92,3 @@ debug_pause_on_frame  = 0
 
 
 analysis_threads = 1
-
