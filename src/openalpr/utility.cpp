@@ -191,17 +191,17 @@ namespace alpr
 
         if (j == 0) {
           int k = 1, win=12;
-          NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], WOLFJOLION, win, win, 0.18 * k);
+          NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], win, win, 0.18 * k);
           bitwise_not(thresholds[j], thresholds[j]);
         } else if (j == 1) {
-           int k = 1;
-           int win = 18;
-           NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], SAUVOLA, win, win, 0.18 * k);
-           bitwise_not(thresholds[j], thresholds[j]);
+          int k = 1;
+          int win = 18;
+          NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], win, win, 0.18 * k);
+          bitwise_not(thresholds[j], thresholds[j]);
         } else if (j == 2) {
           int k = 0;
           int win = 12;
-          NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], SAUVOLA, win, win, 0.18 * k);
+          NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], win, win, 0.18 * k);
           bitwise_not(thresholds[j], thresholds[j]);
         }
       }
