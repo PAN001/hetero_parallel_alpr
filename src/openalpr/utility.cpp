@@ -160,25 +160,52 @@ namespace alpr
     timespec startTime;
     getTimeMonotonic(&startTime);
 
+
+
     // Adaptive strategy
     if(rows > 50 || cols > 50) {
-      // GPU
+      // // solely GPU
 
-      // Sauvola
-      int k = 1;
-      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
-      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
-      bitwise_not(thresholds[i-1], thresholds[i-1]);
+      // // Sauvola
+      // int k = 1;
+      // // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 12, 12, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 12, 12, 0.18 * k);
+      // bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-      k = 1;
-      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-      bitwise_not(thresholds[i-1], thresholds[i-1]);
+      // k = 1;
+      // // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      // bitwise_not(thresholds[i-1], thresholds[i-1]);
 
-      k = 0;
-      // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
-      NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
-      bitwise_not(thresholds[i-1], thresholds[i-1]);
+      // k = 0;
+      // // NiblackSauvolaWolfJolion (img_gray, thresholds[i++], SAUVOLA, 18, 18, 0.18 * k);
+      // NiblackSauvolaWolfJolionCudaWrapper (img_gray, thresholds[i++], 18, 18, 0.18 * k);
+      // bitwise_not(thresholds[i-1], thresholds[i-1]);
+
+      // hetergeneous
+
+      // #pragma omp parallel for schedule(static)
+      #pragma omp parallel for num_threads(THRESHOLD_COUNT)
+      for (int j=0; j < THRESHOLD_COUNT; j++) {
+        int thread_id = omp_get_thread_num();
+
+        if (j == 0) {
+          int k = 1, win=12;
+          NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], WOLFJOLION, win, win, 0.18 * k);
+          bitwise_not(thresholds[j], thresholds[j]);
+        } else if (j == 1) {
+           int k = 1;
+           int win = 18;
+           NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], SAUVOLA, win, win, 0.18 * k);
+           bitwise_not(thresholds[j], thresholds[j]);
+        } else if (j == 2) {
+          int k = 0;
+          int win = 12;
+          NiblackSauvolaWolfJolion(img_gray, im_sum, im_sum_sq, min_I, max_I, thresholds[j], SAUVOLA, win, win, 0.18 * k);
+          bitwise_not(thresholds[j], thresholds[j]);
+        }
+      }
+
 
       if (config->debugTiming)
       {
@@ -196,7 +223,6 @@ namespace alpr
       double min_I, max_I;
       minMaxLoc(img_gray, &min_I, &max_I);
 
-      int i = 0; // TODO: what's this used for?
       // #pragma omp parallel for schedule(static)
       #pragma omp parallel for num_threads(THRESHOLD_COUNT)
       for (int j=0; j < THRESHOLD_COUNT; j++) {
