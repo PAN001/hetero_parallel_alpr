@@ -180,8 +180,9 @@ namespace alpr
 
       // displayImage(config, "Binarization  Thresholds", thresholds[i]);
     }
-    
+
     return thresholds;
+    exit(0);
     //threshold(img_equalized, img_threshold, 100, 255, THRESH_BINARY);
   }
 
