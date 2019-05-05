@@ -142,14 +142,14 @@ namespace alpr
     //adaptiveThreshold(img_gray, thresholds[i++], 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV , 17, 3);
 
     // Wolf
-    int k = 0, win=18;
+    int k = 0, win=12;
     //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     //bitwise_not(thresholds[i-1], thresholds[i-1]);
-    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
+    NiblackSauvolaWolfJolion (img_gray, thresholds[i++], NIBLACK, win, win, 0.05 + (k * 0.35));
     bitwise_not(thresholds[i-1], thresholds[i-1]);
 
     k = 1;
-    win = 22;
+    win = 12;
     NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
     bitwise_not(thresholds[i-1], thresholds[i-1]);
     //NiblackSauvolaWolfJolion (img_gray, thresholds[i++], WOLFJOLION, win, win, 0.05 + (k * 0.35));
