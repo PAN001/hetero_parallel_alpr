@@ -50,8 +50,8 @@ namespace alpr
     Rect expandedRegion = this->pipeline_data->regionOfInterest;
 
     pipeline_data->crop_gray = Mat(this->pipeline_data->grayImg, expandedRegion);
-    resize(pipeline_data->crop_gray, pipeline_data->crop_gray, Size(config->templateWidthPx, config->templateHeightPx));
-
+    // resize(pipeline_data->crop_gray, pipeline_data->crop_gray, Size(config->templateWidthPx, config->templateHeightPx));
+    resize(pipeline_data->crop_gray, pipeline_data->crop_gray, pipeline_data->crop_gray.size());
 
     CharacterAnalysis textAnalysis(pipeline_data);
 
