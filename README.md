@@ -444,7 +444,7 @@ According to our experiment results, we can see that the larger the image size, 
 </p>
 
 <p align="center">
-<img src="img/cpu_speedup.png" width="300" align="middle"/>
+<img src="img/cpu_speedup.png" width="400" align="middle"/>
 <h4 align="center"> Figure 5. Speedup of Multi-core CPU-based parallelized pipeline on GHC machine</h4>
 </p>
 
@@ -480,7 +480,7 @@ Figure 6 shows the speedup comparison of our implementation with original OpenCV
 </p>
 
 <p align="center">
-<img src="img/cpu_lbp_parallel.png" width="300" align="middle"/>
+<img src="img/cpu_lbp_parallel.png" width="400" align="middle"/>
 <h4 align="center"> Figure 6. Speedup comparison of multi-core CPU-based parallelized plate detection on GHC machine</h4>
 </p>
 
@@ -534,7 +534,7 @@ It can be shown from Table 13, Table 14 and Figure 8 that GPU-based parallelism 
 </p>
 
 <p align="center">
-<img src="img/overall_speedup.png" width="400" align="middle"/>
+<img src="img/overall_speedup.png" width="500" align="middle"/>
 <h4 align="center"> Figure 8. Histogram of SpeedUp of the whole pipeline with various image sizes on various platforms</h4>
 </p> 
 
