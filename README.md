@@ -6,6 +6,11 @@ We parallelized an existing automatic number plate recognition system in CUDA on
 <h4 align="center"> Figure 1. Heterogeneous Parallelized Automatic Number Plate Recognition System </h4>
 </p>
 
+# Branch
+- For multi-core CPU parallelized version, please go to CPU branch
+- For GPU parallelized version, please go to GPU branch
+- For integrated heterogeneous parallelized version, please go to heterogeneous branch
+
 # Background
 Automatic number plate recognition (ANPR) is a computation intensive and latency critical application as the input is real-time video stream or image, and the immediate output is often required. ANPR system operates as a complicated pipeline, and there are various processing occuring in stages, including license plate detection, plate binarization, character analysis, plate edge detection, de-skew, character segmentation, optical character recognition (OCR), and post processing. There are relative independence among stages and workflow, and most of the time-consuming operations are related to image processing, which makes the whole system very likely to benefit greatly from parallelism. 
 
